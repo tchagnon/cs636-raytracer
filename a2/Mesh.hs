@@ -74,7 +74,7 @@ intersectM (Ray r d) mat (TriMesh (face:rest)) =
     let t                = (detMat3f (colMat3f amb amc amr)) / detA in
     let recurse          = intersectM (Ray r d) mat (TriMesh rest) in
     if beta >= 0 && gamma >= 0 && (beta + gamma) <= 1 && t >= 0
-        then (Inx t mat):recurse
+        then (Inx t (norm (amb `cross` amc)) mat):recurse
         else recurse
 
 -- Transform the mesh

@@ -53,6 +53,8 @@ magSq   :: Vec3f -> RealT
 magSq (Vec3f a b c)               = (a*a + b*b + c*c)
 norm    :: Vec3f -> Vec3f
 norm v                            = (1/(mag v)) `svMul` v
+(.*) :: Vec3f -> Vec3f -> Vec3f
+Vec3f a b c .* Vec3f d e f        = Vec3f (a*d) (b*e) (c*f)
 
 -- Reduce Vec4f to Vec3f, divide by w
 point3f :: Vec4f -> Vec3f
@@ -66,6 +68,10 @@ direction3f (Vec4f x y z _) = Vec3f x y z
 -- Return elements as a 3-tuple
 vec3fElts :: Vec3f -> (RealT, RealT, RealT)
 vec3fElts (Vec3f x y z) = (x,y,z)
+
+-- Dot product clamped to 0
+dot0 :: Vec3f -> Vec3f -> RealT
+dot0 v1 v2 = max 0 (dot v1 v2)
 
 --------------------------------------------------------------------------------
 -- 4x1 Vector

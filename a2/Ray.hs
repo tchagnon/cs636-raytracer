@@ -13,8 +13,8 @@ data Ray = Ray Vec3f Vec3f
     deriving Show
 
 --                      t     Normal Material
-data Intersection = Inx RealT Material
+data Intersection = Inx RealT Vec3f  Material
     deriving (Show, Eq)
 instance Ord Intersection where
-    compare (Inx t0 _) (Inx t1 _) = compare t0 t1
+    compare (Inx t0 _ _) (Inx t1 _ _) = compare t0 t1
 

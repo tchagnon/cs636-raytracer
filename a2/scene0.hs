@@ -7,8 +7,7 @@
 
 import RayTracer
 
-main = do
-    rayTracer scene0
+main = rayTracer scene0
 
 scene0 =
     Scene {
@@ -16,7 +15,7 @@ scene0 =
         width           = 512,
         height          = 512,
         background      = black,
-        ambientLight    = vec3f 0.2 0.2 0.2,
+        ambientLight    = white,
         defaultMaterial = mat0,
         camera  =
             Camera {
@@ -26,7 +25,7 @@ scene0 =
                 direction   = vec3f 0 0 (-1),
                 up          = vec3f 0 1 0
             },
-        lights = [],
+        lights = [light0],
         objects =
             Group [
                 Transform (translate (vec3f (-1) 0 0)) (
@@ -49,9 +48,15 @@ mat0 =
     PhongMaterial {
         kd = 0.7,
         ks = 0.3,
-        ka = 0.2,
+        ka = 0.1,
         n  = 30,
         c  = white
     }
 
 matBlue = mat0 {c = cornflowerBlue}
+
+light0 =
+    PointLight {
+        color = white,
+        position = vec3f 4 4 9
+    }

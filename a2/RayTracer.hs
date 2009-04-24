@@ -75,7 +75,21 @@ rayTrace scene ray =
 
 -- Interpret a list of intersections as a color
 getColor :: Ray -> [Intersection] -> Scene -> Color
-getColor r [] scene       = background scene
-getColor r ints scene     =
-    let (Inx t mat) = minimum ints in
-    Material.c mat
+getColor _         [] scene       = background scene
+getColor (Ray o d) ints scene     =
+    let (Inx t nVec mat)   = minimum ints in
+    let ixPt               = o + (t `svMul` d) in
+    let kd                 = Material.kd mat in
+    let ks                 = Material.ks mat in
+    let ka                 = Material.ka mat in
+    let n                  = Material.n mat in
+    let c                  = Material.c mat in
+    let iA                 = ambientLight scene in
+    let light              = head (lights scene) in
+    let iL                 = color light in
+    let lVec               = norm ((position light)-ixPt) in
+    let vVec               = (-d) in
+    let rVec               = norm (((2 * (nVec `dot0` lVec)) `svMul` nVec) - lVec) in
+    let cosT               = nVec `dot0` lVec in
+    let cosP               = (rVec `dot0` vVec) ** n in
+    c .* ((kd * cosT + ks * cosP) `svMul` iL + ka `svMul` iA)

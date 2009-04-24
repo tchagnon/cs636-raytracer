@@ -8,7 +8,6 @@ module Scene where
 
 import Color
 import Math
-import MatInv
 import Ray
 import Primitive
 import Mesh

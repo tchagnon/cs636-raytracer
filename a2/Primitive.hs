@@ -21,8 +21,9 @@ sphere r = Sphere r zeroVec3f
 intersectP :: Ray -> Material -> Primitive -> [Intersection]
 intersectP (Ray o d) mat (Sphere r ctr) =
     let b           = 2 * (d `dot` (o-ctr)) in
-    let c           = (magSq (o-ctr)) - r^2 in
-    let discrim     = b^2 - 4*c in
+    let c           = (magSq (o-ctr)) - r*r in
+    let discrim     = b*b - 4*c in
+    let normal t    = (1/r) `svMul` ((o-ctr) + (t `svMul` d)) in
     if discrim < 0
         then []
         else
@@ -31,8 +32,8 @@ intersectP (Ray o d) mat (Sphere r ctr) =
             if t0 < 0
                 then if t1 < 0
                     then []
-                    else [(Inx t1 mat)]
-                else [(Inx t0 mat), (Inx t1 mat)]
+                    else [(Inx t1 (normal t1) mat)]
+                else [(Inx t0 (normal t0) mat), (Inx t1 (normal t1) mat)]
 
 -- Transform Primitives
 transformP :: Mat4f -> Primitive -> Primitive
