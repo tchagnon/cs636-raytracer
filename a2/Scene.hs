@@ -71,8 +71,8 @@ prepScene scene =
 prepObjs :: Mat4f -> ObjectTree -> ObjectTree
 prepObjs t (Group objs)        = Group (map (prepObjs t) objs)
 prepObjs t (Transform t2 objs) = prepObjs (t `mmMul` t2) objs
-prepObjs t (Primitive p)       = Transform (inverse4f t) (Primitive p)
-prepObjs t (Mesh m)            = Transform (inverse4f t) (Mesh m)
+prepObjs t (Primitive p)       = Primitive (transformP t p)
+prepObjs t (Mesh m)            = Mesh (transformM t m)
 
 -- Traverse the Object tree looking for intersections
 intersect :: Ray -> ObjectTree -> [Intersection]

@@ -8,6 +8,9 @@
 module Math where
 
 import Control.Parallel.Strategies
+import Debug.Trace
+tShow :: (Show a, Show b) => a -> b -> b
+tShow x y = trace ((show x) ++ (show y)) y
 
 -- Synonym for Real number type
 type RealT = Double
@@ -100,6 +103,18 @@ point4f (Vec3f x y z) = Vec4f x y z 1
 direction4f :: Vec3f -> Vec4f
 direction4f (Vec3f x y z) = Vec4f x y z 0
 
+-- Indexing
+(!.) :: Vec4f -> Int -> RealT
+(Vec4f e0 e1 e2 e3) !. 0 = e0
+(Vec4f e0 e1 e2 e3) !. 1 = e1
+(Vec4f e0 e1 e2 e3) !. 2 = e2
+(Vec4f e0 e1 e2 e3) !. 3 = e3
+(Vec4f e0 e1 e2 e3) !. _ = error "Invalid index to (!) Mat4f"
+
+-- Transform a Vec3f point using a Mat4f tranformation matrix
+transformPt :: Mat4f -> Vec3f -> Vec3f
+transformPt t v = point3f (t `mvMul` (point4f v))
+
 --------------------------------------------------------------------------------
 -- 4x4 Matrix
 --------------------------------------------------------------------------------
@@ -137,6 +152,14 @@ id4f = Mat4f    (Vec4f 1 0 0 0)
                 (Vec4f 0 1 0 0)
                 (Vec4f 0 0 1 0)
                 (Vec4f 0 0 0 1)
+
+-- Indexing
+(!|) :: Mat4f -> Int -> Vec4f
+(Mat4f r0 r1 r2 r3) !| 0 = r0
+(Mat4f r0 r1 r2 r3) !| 1 = r1
+(Mat4f r0 r1 r2 r3) !| 2 = r2
+(Mat4f r0 r1 r2 r3) !| 3 = r3
+(Mat4f r0 r1 r2 r3) !| _ = error "Invalid index to (!!) Mat4f"
 
 --------------------------------------------------------------------------------
 -- 3x3 Column Matrix

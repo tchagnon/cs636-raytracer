@@ -76,3 +76,13 @@ intersectM (Ray r d) (TriMesh (face:rest)) =
         then t:recurse
         else recurse
 
+-- Transform the mesh
+transformM :: Mat4f -> Mesh -> Mesh
+transformM t (TriMesh faces) = TriMesh (map (transformF t) faces)
+
+-- Transform a face
+transformF :: Mat4f -> Face -> Face
+transformF t (Face a amb amc) =
+    let tPt = transformPt t in
+    Face (tPt a) (tPt amb) (tPt amc)
+

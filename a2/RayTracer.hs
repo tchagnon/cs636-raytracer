@@ -23,10 +23,6 @@ import Primitive
 import System.Environment
 import Control.Parallel.Strategies
 
---import Debug.Trace
---traceShow :: Show a => a->a
---traceShow x = trace (show x) x
-
 -- Top-level Rendering routine
 rayTracer :: Scene -> IO()
 rayTracer scene = do
