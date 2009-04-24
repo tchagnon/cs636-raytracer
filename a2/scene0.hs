@@ -12,9 +12,12 @@ main = do
 
 scene0 =
     Scene {
-        outfile = "scene0.ppm",
-        width   = 512,
-        height  = 512,
+        outfile         = "scene0.ppm",
+        width           = 512,
+        height          = 512,
+        background      = black,
+        ambientLight    = vec3f 0.2 0.2 0.2,
+        defaultMaterial = mat0,
         camera  =
             Camera {
                 dist        = 3,
@@ -23,19 +26,32 @@ scene0 =
                 direction   = vec3f 0 0 (-1),
                 up          = vec3f 0 1 0
             },
-        background = black,
+        lights = [],
         objects =
             Group [
                 Transform (translate (vec3f (-1) 0 0)) (
                     Primitive (sphere 0.4)),
                 Transform (translate (vec3f   1  0 0)) (
                     Primitive (sphere 0.4)),
-                Transform (rotate (-90) (vec3f  0 1 0)) (
-                    --LoadMesh "../models/octahedron.smf"
-                    --LoadMesh "../models/icos.smf"
-                    --LoadMesh "../models/sprellpsd.smf"
-                    --LoadMesh "../models/bound-bunny_200.smf"
-                    LoadMesh "../models/bound-bunny_1k.smf"
-                    )
+                Material matBlue (
+                    Transform (rotate (-90) (vec3f  0 1 0)) (
+                        --LoadMesh "../models/octahedron.smf"
+                        --LoadMesh "../models/icos.smf"
+                        --LoadMesh "../models/sprellpsd.smf"
+                        --LoadMesh "../models/bound-bunny_200.smf"
+                        LoadMesh "../models/bound-bunny_1k.smf"
+                        )
+                )
             ]
     }
+
+mat0 =
+    PhongMaterial {
+        kd = 0.7,
+        ks = 0.3,
+        ka = 0.2,
+        n  = 30,
+        c  = white
+    }
+
+matBlue = mat0 {c = cornflowerBlue}

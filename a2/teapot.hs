@@ -15,6 +15,9 @@ scene =
         outfile = "teapot.ppm",
         width   = 512,
         height  = 512,
+        background = black,
+        ambientLight    = vec3f 0.2 0.2 0.2,
+        defaultMaterial = mat0,
         camera  =
             Camera {
                 dist        = 3,
@@ -23,9 +26,18 @@ scene =
                 direction   = vec3f 0 0 (-1),
                 up          = vec3f 0 1 0
             },
-        background = black,
+        lights = [],
         objects =
             Group [
                 LoadMesh "../models/teapot.smf"
             ]
+    }
+
+mat0 =
+    PhongMaterial {
+        kd = 0.7,
+        ks = 0.3,
+        ka = 0.2,
+        n  = 30,
+        c  = white
     }

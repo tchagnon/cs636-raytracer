@@ -7,15 +7,14 @@
 module Ray where
 
 import Math
+import Material
 
 data Ray = Ray Vec3f Vec3f
     deriving Show
 
-type Intersection = RealT
-
--- Transform the ray to object space
-transformR :: Mat4f -> Ray -> Ray
-transformR m (Ray o d) =
-    (Ray (point3f (m `mvMul` (point4f o)))
-         (norm (direction3f (m `mvMul` (direction4f d)))))
+--                      t     Normal Material
+data Intersection = Inx RealT Material
+    deriving (Show, Eq)
+instance Ord Intersection where
+    compare (Inx t0 _) (Inx t1 _) = compare t0 t1
 

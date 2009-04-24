@@ -8,6 +8,7 @@ module Primitive where
 
 import Math
 import Ray
+import Material
 
 data Primitive  = Sphere RealT Vec3f
     deriving (Show, Eq)
@@ -17,8 +18,8 @@ sphere :: RealT -> Primitive
 sphere r = Sphere r zeroVec3f
 
 -- Intersect a ray with primitives
-intersectP :: Ray -> Primitive -> [Intersection]
-intersectP (Ray o d) (Sphere r ctr) =
+intersectP :: Ray -> Material -> Primitive -> [Intersection]
+intersectP (Ray o d) mat (Sphere r ctr) =
     let b           = 2 * (d `dot` (o-ctr)) in
     let c           = (magSq (o-ctr)) - r^2 in
     let discrim     = b^2 - 4*c in
@@ -30,8 +31,8 @@ intersectP (Ray o d) (Sphere r ctr) =
             if t0 < 0
                 then if t1 < 0
                     then []
-                    else [t1]
-                else [t0, t1]
+                    else [(Inx t1 mat)]
+                else [(Inx t0 mat), (Inx t1 mat)]
 
 -- Transform Primitives
 transformP :: Mat4f -> Primitive -> Primitive

@@ -12,15 +12,19 @@ import MatInv
 import Ray
 import Primitive
 import Mesh
+import Material
 
 data Scene =
     Scene {
-        outfile    :: String,
-        width      :: Int,
-        height     :: Int,
-        camera     :: Camera,
-        background :: Color,
-        objects    :: ObjectTree
+        outfile         :: String,
+        width           :: Int,
+        height          :: Int,
+        background      :: Color,
+        ambientLight    :: Color,
+        defaultMaterial :: Material,
+        camera          :: Camera,
+        lights          :: [Light],
+        objects         :: ObjectTree
     }
     deriving Show
 
@@ -34,11 +38,19 @@ data Camera =
     }
     deriving Show
 
+data Light =
+    PointLight{
+        color       :: Color,
+        position    :: Vec3f
+    }
+    deriving Show
+
 data ObjectTree = Group [ObjectTree]
                 | Transform Mat4f ObjectTree
+                | Material Material ObjectTree
                 | Primitive Primitive
-                | LoadMesh String
                 | Mesh Mesh
+                | LoadMesh String
     deriving Show
 
 -- Load scene
@@ -55,11 +67,14 @@ loadObjs (Group objs)      = do
 loadObjs (Transform t obj) = do
     obj' <- loadObjs obj
     return (Transform t obj')
-loadObjs (Primitive p)     = return (Primitive p)
-loadObjs (LoadMesh file)   = do
+loadObjs (Material m obj)  = do
+    obj' <- loadObjs obj
+    return (Material m obj')
+loadObjs (Primitive p)   = return (Primitive p)
+loadObjs (LoadMesh file) = do
     mesh <- loadSMF file
     return (Mesh mesh)
-loadObjs (Mesh m)          = error "loadObjs undexpected Mesh"
+loadObjs (Mesh m)      = error "loadObjs undexpected Mesh"
 
 -- Precompute, flatten and invert transforms
 prepScene :: Scene -> Scene
@@ -73,14 +88,16 @@ prepObjs t (Group objs)        = Group (map (prepObjs t) objs)
 prepObjs t (Transform t2 objs) = prepObjs (t `mmMul` t2) objs
 prepObjs t (Primitive p)       = Primitive (transformP t p)
 prepObjs t (Mesh m)            = Mesh (transformM t m)
+prepObjs t (Material m objs)   = Material m (prepObjs t objs)
+prepObjs _ o                   = error $ "Undefined prepObjs on object: " ++ (show o)
 
 -- Traverse the Object tree looking for intersections
-intersect :: Ray -> ObjectTree -> [Intersection]
-intersect r (Group objs)        = concatMap (intersect r) objs
-intersect r (Transform m obj)   = intersect (transformR m r) obj
-intersect r (Primitive p)       = intersectP r p
-intersect r (Mesh m)            = intersectM r m
-intersect _ _                   = []
+intersect :: Ray -> Material -> ObjectTree -> [Intersection]
+intersect r mat (Group objs)        = concatMap (intersect r mat) objs
+intersect r mat (Primitive p)       = intersectP r mat p
+intersect r mat (Mesh m)            = intersectM r mat m
+intersect r mat (Material mat' obj) = intersect r mat' obj
+intersect _ _   o                   = error $ "Undefined intersect on object: " ++ (show o)
 
 -- Generate a translation transformation matrix
 translate :: Vec3f -> Mat4f

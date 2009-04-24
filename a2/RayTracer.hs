@@ -10,7 +10,8 @@ module RayTracer (
     module Color,
     module Ray, 
     module Scene,
-    module Primitive
+    module Primitive,
+    module Material
     ) where
 
 import Color
@@ -19,6 +20,7 @@ import Scene
 import Image
 import Math
 import Primitive
+import Material
 
 import System.Environment
 import Control.Parallel.Strategies
@@ -67,10 +69,13 @@ makePixels scene =
 rayTrace :: Scene -> Ray -> Color
 rayTrace scene ray =
     let objs        = objects scene in
-    let inters      = intersect ray objs in
-    getColor inters scene
+    let defMat      = defaultMaterial scene in
+    let inters      = intersect ray defMat objs in
+    getColor ray inters scene
 
 -- Interpret a list of intersections as a color
-getColor :: [Intersection] -> Scene -> Color
-getColor [] scene       = background scene
-getColor ints scene     = white
+getColor :: Ray -> [Intersection] -> Scene -> Color
+getColor r [] scene       = background scene
+getColor r ints scene     =
+    let (Inx t mat) = minimum ints in
+    Material.c mat

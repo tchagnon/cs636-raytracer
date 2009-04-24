@@ -9,6 +9,7 @@ module Mesh where
 import Data.Array
 import Math
 import Ray
+import Material
 
 data Mesh = TriMesh ![Face]
     deriving (Show, Eq)
@@ -61,9 +62,9 @@ list2face verts (ai:bi:ci:_)    =
     Face a (a-b) (a-c)
 
 -- Intersect a ray with a mesh model
-intersectM :: Ray -> Mesh -> [Intersection]
-intersectM (Ray r d) (TriMesh []) = []
-intersectM (Ray r d) (TriMesh (face:rest)) =
+intersectM :: Ray -> Material -> Mesh -> [Intersection]
+intersectM (Ray r d) mat (TriMesh []) = []
+intersectM (Ray r d) mat (TriMesh (face:rest)) =
     let (Face a amb amc) = face in
     let amr              = a-r in
     let mtxA             = colMat3f amb amc d in
@@ -71,9 +72,9 @@ intersectM (Ray r d) (TriMesh (face:rest)) =
     let beta             = (detMat3f (colMat3f amr amc d))   / detA in
     let gamma            = (detMat3f (colMat3f amb amr d))   / detA in
     let t                = (detMat3f (colMat3f amb amc amr)) / detA in
-    let recurse          = intersectM (Ray r d) (TriMesh rest) in
+    let recurse          = intersectM (Ray r d) mat (TriMesh rest) in
     if beta >= 0 && gamma >= 0 && (beta + gamma) <= 1 && t >= 0
-        then t:recurse
+        then (Inx t mat):recurse
         else recurse
 
 -- Transform the mesh
