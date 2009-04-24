@@ -1,0 +1,49 @@
+NAME
+    Assignment 1 - Basic ray tracer with spheres and triangle meshes
+
+    Timothy A. Chagnon (tc365)
+    CS 636 - Advanced Rendering Techniques
+    14 April 2009
+
+DESCRIPTION
+    This program takes a scene description with spheres and meshes and renders
+    the scene to PPM image format.  The program is written in Haskell.
+
+DEVELOPMENT ENVIRONMENT
+    vim
+    GHC         6.8.2-2ubuntu1 and 6.10.2
+    GNU Make    3.81-3build1
+    Ubuntu      8.04 (x86_64)
+
+FILES
+
+  Scenes:
+    scene0.hs               Bunny and 2 spheres
+    teapot.hs               Teapot
+
+  Core Code:
+    RayTracer.hs            Top level ray tracing logic
+    Scene.hs                Scene description objects
+    Mesh.hs                 Triangle mesh code
+    Primitive.hs            Primitive shapes
+    Ray.hs                  Ray object
+    Math.hs                 Switcher between Direct/hMatrix
+    MathDirect.hs           Linear Algebra directly implemented
+    MathHmatrix.hs          Linear Algebra via hMatrix/ATLAS
+    MatInv.hs               Matrix inversion generated code
+    Image.hs                Writing to PPM
+    Color.hs                Colors
+
+  Other:
+    README
+    Makefile
+    minv.mw                 Maple worksheet containing 4x4 inverse code
+
+COMPILING
+    $ make
+
+    $ make clean
+        Removes all built files
+
+    $ make test
+        Renders all scenes, displays PPM files via ImageMagick display command.
