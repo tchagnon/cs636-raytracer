@@ -9,8 +9,8 @@ module Math where
 
 import Control.Parallel.Strategies
 import Debug.Trace
-tShow :: (Show a, Show b) => a -> b -> b
-tShow x y = trace ((show x) ++ (show y)) y
+tShow :: Show a => String -> a -> a
+tShow x y = trace (x ++ " " ++ (show y)) y
 
 -- Synonym for Real number type
 type RealT = Double
@@ -120,6 +120,10 @@ direction4f (Vec3f x y z) = Vec4f x y z 0
 -- Transform a Vec3f point using a Mat4f tranformation matrix
 transformPt :: Mat4f -> Vec3f -> Vec3f
 transformPt t v = point3f (t `mvMul` (point4f v))
+
+-- Transform a Vec3f direction using a Mat4f tranformation matrix
+transformDir :: Mat4f -> Vec3f -> Vec3f
+transformDir t v = direction3f (t `mvMul` (direction4f v))
 
 --------------------------------------------------------------------------------
 -- 4x4 Matrix

@@ -49,7 +49,7 @@ data ObjectTree = Group [ObjectTree]
                 | Material Material ObjectTree
                 | Primitive Primitive
                 | Mesh Mesh
-                | LoadMesh String
+                | LoadMesh String MeshShading
     deriving Show
 
 -- Load scene
@@ -70,8 +70,8 @@ loadObjs (Material m obj)  = do
     obj' <- loadObjs obj
     return (Material m obj')
 loadObjs (Primitive p)   = return (Primitive p)
-loadObjs (LoadMesh file) = do
-    mesh <- loadSMF file
+loadObjs (LoadMesh file shading) = do
+    mesh <- loadSMF file shading
     return (Mesh mesh)
 loadObjs (Mesh m)      = error "loadObjs undexpected Mesh"
 

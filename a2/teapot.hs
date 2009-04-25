@@ -21,7 +21,7 @@ scene =
         camera  =
             Camera {
                 dist        = 3,
-                fovAngle    = 56,
+                fovAngle    = 47,
                 location    = vec3f 0 1.5 8,
                 direction   = vec3f 0 0 (-1),
                 up          = vec3f 0 1 0
@@ -29,7 +29,7 @@ scene =
         lights = [light0, light1],
         objects =
             Group [
-                LoadMesh "../models/teapot.smf"
+                LoadMesh "../models/teapot.smf" SmoothShade
             ]
     }
 

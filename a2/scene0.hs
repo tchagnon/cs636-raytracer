@@ -34,12 +34,12 @@ scene0 =
                     Primitive (sphere 0.4)),
                 Material matBlue (
                     Transform (rotate (-90) (vec3f  0 1 0)) (
-                        --LoadMesh "../models/octahedron.smf"
-                        --LoadMesh "../models/icos.smf"
-                        --LoadMesh "../models/sprellpsd.smf"
-                        --LoadMesh "../models/bound-bunny_200.smf"
-                        LoadMesh "../models/bound-bunny_1k.smf"
-                        )
+                        --LoadMesh "../models/octahedron.smf" FlatShade
+                        --LoadMesh "../models/icos.smf" FlatShade
+                        --LoadMesh "../models/sprellpsd.smf" FlatShade
+                        --LoadMesh "../models/bound-bunny_200.smf" SmoothShade
+                        LoadMesh "../models/bound-bunny_1k.smf" SmoothShade
+                    )
                 )
             ]
     }
