@@ -1,9 +1,9 @@
 NAME
-    Assignment 1 - Basic ray tracer with spheres and triangle meshes
+    Assignment 2 - Add diffuse/specular shading model with point lights.
 
     Timothy A. Chagnon (tc365)
     CS 636 - Advanced Rendering Techniques
-    14 April 2009
+    27 April 2009
 
 DESCRIPTION
     This program takes a scene description with spheres and meshes and renders
@@ -11,7 +11,7 @@ DESCRIPTION
 
 DEVELOPMENT ENVIRONMENT
     vim
-    GHC         6.8.2-2ubuntu1 and 6.10.2
+    GHC         6.10.1
     GNU Make    3.81-3build1
     Ubuntu      8.04 (x86_64)
 
@@ -19,7 +19,7 @@ FILES
 
   Scenes:
     scene0.hs               Bunny and 2 spheres
-    teapot.hs               Teapot
+    scene1.hs               Campfire with bunny, frog, cow, teapot, outhouse.
 
   Core Code:
     RayTracer.hs            Top level ray tracing logic
@@ -27,23 +27,22 @@ FILES
     Mesh.hs                 Triangle mesh code
     Primitive.hs            Primitive shapes
     Ray.hs                  Ray object
-    Math.hs                 Switcher between Direct/hMatrix
-    MathDirect.hs           Linear Algebra directly implemented
-    MathHmatrix.hs          Linear Algebra via hMatrix/ATLAS
-    MatInv.hs               Matrix inversion generated code
+    Math.hs                 Linear Algebra directly implemented
     Image.hs                Writing to PPM
     Color.hs                Colors
+    Material.hs             Material type
 
   Other:
     README
     Makefile
-    minv.mw                 Maple worksheet containing 4x4 inverse code
 
 COMPILING
     $ make
+        Builds scene executables
+
+    $ make test
+        Renders all scenes, displays PPM files via ImageMagick display command.
 
     $ make clean
         Removes all built files
 
-    $ make test
-        Renders all scenes, displays PPM files via ImageMagick display command.
