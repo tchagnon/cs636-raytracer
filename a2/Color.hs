@@ -25,5 +25,12 @@ green           :: Color
 green           = vec3f 0 1 0
 blue            :: Color
 blue            = vec3f 0 0 1
+orange          :: Color
+orange          = vec3f 1 0.5 0
+brightOrange    :: Color
+brightOrange    = vec3f 1 0.8 0
+darkGreen       :: Color
+darkGreen       = vec3f 0 0.5 0
+
 cornflowerBlue  :: Color
 cornflowerBlue  = rgbDec 100 149 237

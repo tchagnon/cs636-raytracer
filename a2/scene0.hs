@@ -20,21 +20,21 @@ scene0 =
         defaultMaterial = mat0,
         camera  =
             Camera {
-                dist        = 3,
-                fovAngle    = 56,
-                location    = vec3f 0 0 3,
+                dist        = 5,
+                fovAngle    = 45,
+                location    = vec3f 0 0 5,
                 direction   = vec3f 0 0 (-1),
                 up          = vec3f 0 1 0
             },
         lights = [light0],
         objects =
             Group [
-                Transform (translate (vec3f (-1) 0 0)) (
+                Transform (translate (vec3f (-1) 1 0)) (
                     Primitive (sphere 0.4)),
-                Transform (translate (vec3f   1  0 0)) (
+                Transform (translate (vec3f   1  1 0)) (
                     Primitive (sphere 0.4)),
                 Material matBlue (
-                    Transform (rotate (-90) (vec3f  0 1 0)) (
+                    Transform (translate (vec3f 0 (-0.3) 2.5)) (
                         --LoadMesh "../models/octahedron.smf" FlatShade
                         --LoadMesh "../models/icos.smf" FlatShade
                         --LoadMesh "../models/sprellpsd.smf" FlatShade

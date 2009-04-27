@@ -1,4 +1,4 @@
-SCENES = scene0 teapot
+SCENES = scene1
 IMAGES = $(addsuffix .ppm,$(SCENES))
 DEPENDS = Color Image Material Math Mesh Primitive Ray RayTracer Scene
 GHCARGS = -threaded #-prof -auto-all
