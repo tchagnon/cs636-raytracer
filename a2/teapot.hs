@@ -15,6 +15,7 @@ scene =
         outfile         = "teapot.ppm",
         width           = 512,
         height          = 512,
+        superSample     = 2,
         background      = black,
         ambientLight    = white,
         defaultMaterial = mat0,

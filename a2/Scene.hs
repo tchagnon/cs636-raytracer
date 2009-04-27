@@ -18,6 +18,7 @@ data Scene =
         outfile         :: String,
         width           :: Int,
         height          :: Int,
+        superSample     :: Int,
         background      :: Color,
         ambientLight    :: Color,
         defaultMaterial :: Material,

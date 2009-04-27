@@ -47,6 +47,8 @@ evalParallel threads pixels =
 -- Calculate each ray per pixel and call rayTrace
 makePixels :: Scene -> [Color]
 makePixels scene =
+    let sf            = superSample scene in
+    let invSF         = 1/(fromIntegral sf) :: RealT in
     let (w, h)        = (width scene, height scene) in
     let cam           = camera scene in
     let d             = dist cam in
@@ -60,11 +62,15 @@ makePixels scene =
     let p00           = loc + (d `svMul` dir) - ((sj/2) `svMul` side) + ((sk/2) `svMul` upv) in
     let pixelRightVec = (sj/(fromIntegral (w-1))) `svMul` side in
     let pixelDownVec  = (sk/(fromIntegral (h-1))) `svMul` upv in
-    let djk j k       = (p00 + (fromIntegral j) `svMul` pixelRightVec 
-                             - (fromIntegral k) `svMul` pixelDownVec)
+    let djk j k       = (p00 + (j `svMul` pixelRightVec)
+                             - (k `svMul` pixelDownVec))
                         - loc in
-    let rays          = [(Ray loc (norm (djk j k))) | k <- [0..h-1], j <- [0..w-1]]  in
-    let pixels        = map (rayTrace scene) rays in
+    let ray j k       = Ray loc (norm (djk j k)) in
+    let subIncr       = [0.0, invSF .. 1.0 - invSF] in
+    let subsamples j k= [ray (j+x) (k+y) | x <- subIncr, y <- subIncr] in
+    let rays          = [subsamples (fromIntegral j) (fromIntegral k) | k <- [0..h-1], j <- [0..w-1]]  in
+    let singlePix rs  = avgPixels (sf^2) (map (rayTrace scene) rs) in
+    let pixels        = map singlePix rays in
     pixels 
 
 -- Single Ray Trace
@@ -100,3 +106,8 @@ diffSpec mat ixPt nVec vVec light =
     let cosT               = nVec `dot0` lVec in
     let cosP               = (rVec `dot0` vVec) ** n in
     (kd * cosT + ks * cosP) `svMul` iL
+
+-- Average pixels after supersampling
+avgPixels :: Int -> [Color] -> Color
+avgPixels n pixels = (1/(fromIntegral n)) `svMul` (sum pixels)
+

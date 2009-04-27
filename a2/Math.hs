@@ -9,8 +9,8 @@ module Math where
 
 import Control.Parallel.Strategies
 import Debug.Trace
-tShow :: Show a => String -> a -> a
-tShow x y = trace (x ++ " " ++ (show y)) y
+tshow :: Show a => String -> a -> a
+tshow x y = trace (x ++ " " ++ (show y)) y
 
 -- Synonym for Real number type
 type RealT = Double
