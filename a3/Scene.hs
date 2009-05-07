@@ -12,6 +12,7 @@ import Ray
 import Primitive
 import Mesh
 import Material
+import Bounding
 
 data Scene =
     Scene {
@@ -51,6 +52,7 @@ data ObjectTree = Group [ObjectTree]
                 | Primitive Primitive
                 | Mesh Mesh
                 | LoadMesh String MeshShading
+                | Bounding Bounding ObjectTree
     deriving Show
 
 -- Load scene
@@ -76,11 +78,12 @@ loadObjs (LoadMesh file shading) = do
     return (Mesh mesh)
 loadObjs (Mesh m)      = error "loadObjs undexpected Mesh"
 
--- Precompute, flatten and invert transforms
+-- Precompute, flatten and transform; construct Bounding Volume Heirarchy
 prepScene :: Scene -> Scene
 prepScene scene =
     let objs2 = prepObjs id4f (objects scene) in
-    scene{objects = objs2}
+    let objs3 = constructBVH objs2 in
+    scene{objects = objs3}
 
 -- Push transforms down to primitives
 prepObjs :: Mat4f -> ObjectTree -> ObjectTree
@@ -91,12 +94,21 @@ prepObjs t (Mesh m)            = Mesh (transformM t m)
 prepObjs t (Material m objs)   = Material m (prepObjs t objs)
 prepObjs _ o                   = error $ "Undefined prepObjs on object: " ++ (show o)
 
+-- Compute Bounding Volume Heirarchy
+constructBVH :: ObjectTree -> ObjectTree
+constructBVH (Group objs)        = Group (map constructBVH objs)
+constructBVH (Primitive p)       = Bounding (boundingP p) (Primitive p)
+constructBVH (Mesh m)            = Bounding (boundingM m) (Mesh m)
+constructBVH (Material mat' obj) = Material mat' (constructBVH obj)
+constructBVH o                   = error $ "Undefined constructBVH on object: " ++ (show o)
+
 -- Traverse the Object tree looking for intersections
 intersect :: Ray -> Material -> ObjectTree -> [Intersection]
 intersect r mat (Group objs)        = concatMap (intersect r mat) objs
 intersect r mat (Primitive p)       = intersectP r mat p
 intersect r mat (Mesh m)            = intersectM r mat m
 intersect r mat (Material mat' obj) = intersect r mat' obj
+intersect r mat (Bounding b obj)    = if (intersectB r b) then intersect r mat obj else []
 intersect _ _   o                   = error $ "Undefined intersect on object: " ++ (show o)
 
 -- Generate a translation transformation matrix
