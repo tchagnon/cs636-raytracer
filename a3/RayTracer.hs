@@ -34,7 +34,7 @@ rayTracer :: Scene -> IO()
 rayTracer scene = do
     args                <- getArgs
     let args'           = map read args :: [Int]
-    let args''          = args' `elseL` [1, 50]
+    let args''          = args' `elseL` [1, 35]
     let threads         = args'' !! 0
     let faceThreshold   = args'' !! 1
     lScene              <- loadScene scene
