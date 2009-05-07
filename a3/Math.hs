@@ -73,6 +73,16 @@ vec3fElts (Vec3f x y z) = (x,y,z)
 dot0 :: Vec3f -> Vec3f -> RealT
 dot0 v1 v2 = max 0 (dot v1 v2)
 
+-- zipWith for Vec3f
+zipWith3f :: (RealT -> RealT -> RealT) -> Vec3f -> Vec3f -> Vec3f
+zipWith3f g (Vec3f a b c) (Vec3f d e f) = Vec3f (g a d) (g b e) (g c f)
+
+-- Element extraction
+v3x, v3y, v3z :: Vec3f -> RealT
+v3x (Vec3f x _ _) = x
+v3y (Vec3f _ y _) = y
+v3z (Vec3f _ _ z) = z
+
 --------------------------------------------------------------------------------
 -- 4x1 Vector
 --------------------------------------------------------------------------------

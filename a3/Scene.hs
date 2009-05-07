@@ -13,6 +13,7 @@ import Primitive
 import Mesh
 import Material
 import Bounding
+import Object
 
 data Scene =
     Scene {
@@ -46,37 +47,11 @@ data Light =
     }
     deriving Show
 
-data ObjectTree = Group [ObjectTree]
-                | Transform Mat4f ObjectTree
-                | Material Material ObjectTree
-                | Primitive Primitive
-                | Mesh Mesh
-                | LoadMesh String MeshShading
-                | Bounding Bounding ObjectTree
-    deriving Show
-
 -- Load scene
 loadScene :: Scene -> IO Scene
 loadScene scene = do
     objs1 <- loadObjs (objects scene)
     return scene{objects = objs1}
-
--- Load object tree
-loadObjs :: ObjectTree -> IO ObjectTree
-loadObjs (Group objs)      = do
-    objs' <- mapM loadObjs objs
-    return (Group objs')
-loadObjs (Transform t obj) = do
-    obj' <- loadObjs obj
-    return (Transform t obj')
-loadObjs (Material m obj)  = do
-    obj' <- loadObjs obj
-    return (Material m obj')
-loadObjs (Primitive p)   = return (Primitive p)
-loadObjs (LoadMesh file shading) = do
-    mesh <- loadSMF file shading
-    return (Mesh mesh)
-loadObjs (Mesh m)      = error "loadObjs undexpected Mesh"
 
 -- Precompute, flatten and transform; construct Bounding Volume Heirarchy
 prepScene :: Scene -> Scene
@@ -84,32 +59,6 @@ prepScene scene =
     let objs2 = prepObjs id4f (objects scene) in
     let objs3 = constructBVH objs2 in
     scene{objects = objs3}
-
--- Push transforms down to primitives
-prepObjs :: Mat4f -> ObjectTree -> ObjectTree
-prepObjs t (Group objs)        = Group (map (prepObjs t) objs)
-prepObjs t (Transform t2 objs) = prepObjs (t `mmMul` t2) objs
-prepObjs t (Primitive p)       = Primitive (transformP t p)
-prepObjs t (Mesh m)            = Mesh (transformM t m)
-prepObjs t (Material m objs)   = Material m (prepObjs t objs)
-prepObjs _ o                   = error $ "Undefined prepObjs on object: " ++ (show o)
-
--- Compute Bounding Volume Heirarchy
-constructBVH :: ObjectTree -> ObjectTree
-constructBVH (Group objs)        = Group (map constructBVH objs)
-constructBVH (Primitive p)       = Bounding (boundingP p) (Primitive p)
-constructBVH (Mesh m)            = Bounding (boundingM m) (Mesh m)
-constructBVH (Material mat' obj) = Material mat' (constructBVH obj)
-constructBVH o                   = error $ "Undefined constructBVH on object: " ++ (show o)
-
--- Traverse the Object tree looking for intersections
-intersect :: Ray -> Material -> ObjectTree -> [Intersection]
-intersect r mat (Group objs)        = concatMap (intersect r mat) objs
-intersect r mat (Primitive p)       = intersectP r mat p
-intersect r mat (Mesh m)            = intersectM r mat m
-intersect r mat (Material mat' obj) = intersect r mat' obj
-intersect r mat (Bounding b obj)    = if (intersectB r b) then intersect r mat obj else []
-intersect _ _   o                   = error $ "Undefined intersect on object: " ++ (show o)
 
 -- Generate a translation transformation matrix
 translate :: Vec3f -> Mat4f

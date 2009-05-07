@@ -22,8 +22,19 @@ boundingP (Sphere r c) =
     
 -- Construct a bounding volume from a Mesh
 boundingM :: Mesh -> Bounding
-boundingM (TriMesh faces _) =
+boundingM (TriMesh faces _) = boundingF faces
+
+-- Construct a bounding volume from a list of faces
+boundingF :: [(Face,Face)] -> Bounding
+boundingF faces =
     let (minV, maxV) = minMaxFaces faces in
+    BoundingBox minV maxV
+
+-- Get a bounding volume from the union of 2 other bounding volumes
+boundUnion :: Bounding -> Bounding -> Bounding
+boundUnion (BoundingBox minA maxA) (BoundingBox minB maxB) =
+    let minV = zipWith3f min minA minB in
+    let maxV = zipWith3f max maxA maxB in
     BoundingBox minV maxV
 
 -- Infinity
@@ -33,18 +44,11 @@ inf = 1/0
 minMaxFaces :: [(Face,Face)] -> (Vec3f, Vec3f)
 minMaxFaces = foldl f ((Vec3f inf inf inf),(Vec3f (-inf) (-inf) (-inf))) where
     f (minV,maxV) ((Face a amb amc),_) =
-        let (Vec3f minX minY minZ) = minV in
-        let (Vec3f maxX maxY maxZ) = maxV in
-        let (Vec3f ax ay az) = a in
-        let (Vec3f bx by bz) = a-amb in
-        let (Vec3f cx cy cz) = a-amc in
-        let minX' = minimum [minX, ax, bx, cx] in
-        let minY' = minimum [minY, ay, by, cy] in
-        let minZ' = minimum [minZ, az, bz, cz] in
-        let maxX' = maximum [maxX, ax, bx, cx] in
-        let maxY' = maximum [maxY, ay, by, cy] in
-        let maxZ' = maximum [maxZ, az, bz, cz] in
-        ((Vec3f minX' minY' minZ'),(Vec3f maxX' maxY' maxZ'))
+        let b       = a - amb in
+        let c       = a - amc in
+        let minV'   = foldl1 (zipWith3f min) [minV, a, b, c] in
+        let maxV'   = foldl1 (zipWith3f max) [maxV, a, b, c] in
+        (minV',maxV')
 
 -- Determine if there is an intersection with the bounding box
 intersectB :: Ray -> Bounding -> Bool
@@ -76,3 +80,4 @@ getTs (roX, rdX, x1, x2) =
     if t1 > t2
         then (t2, t1)
         else (t1, t2)
+

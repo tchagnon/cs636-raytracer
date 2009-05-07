@@ -6,7 +6,6 @@
  -}
 module Mesh where
 
-import Debug.Trace
 import Data.Array
 import Math
 import Ray

@@ -12,7 +12,8 @@ module RayTracer (
     module Scene,
     module Primitive,
     module Material,
-    module Mesh
+    module Mesh,
+    module Object
     ) where
 
 import Color
@@ -23,6 +24,7 @@ import Math
 import Primitive
 import Material
 import Mesh
+import Object
 
 import System.Environment
 import Control.Parallel.Strategies
