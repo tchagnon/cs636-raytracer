@@ -54,10 +54,10 @@ loadScene scene = do
     return scene{objects = objs1}
 
 -- Precompute, flatten and transform; construct Bounding Volume Heirarchy
-prepScene :: Scene -> Scene
-prepScene scene =
+prepScene :: Int -> Scene -> Scene
+prepScene faceThreshold scene =
     let objs2 = prepObjs id4f (objects scene) in
-    let objs3 = constructBVH objs2 in
+    let objs3 = constructBVH faceThreshold objs2 in
     scene{objects = objs3}
 
 -- Generate a translation transformation matrix

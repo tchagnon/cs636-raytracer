@@ -64,18 +64,18 @@ intersect r mat Empty               = []
 intersect _ _   o                   = error $ "Undefined intersect on object: " ++ (show o)
 
 -- Compute Bounding Volume Heirarchy
-constructBVH :: ObjectTree -> ObjectTree
-constructBVH (Group objs)        = Group (map constructBVH objs)
-constructBVH (Primitive p)       = Bounding (boundingP p) (Primitive p)
-constructBVH (Mesh m)            = dissectMesh m
-constructBVH (Material mat' obj) = Material mat' (constructBVH obj)
-constructBVH o                   = error $ "Undefined constructBVH on object: " ++ (show o)
+constructBVH :: Int -> ObjectTree -> ObjectTree
+constructBVH t (Group objs)        = Group (map (constructBVH t) objs)
+constructBVH t (Primitive p)       = Bounding (boundingP p) (Primitive p)
+constructBVH t (Mesh m)            = dissectMesh t m
+constructBVH t (Material mat' obj) = Material mat' (constructBVH t obj)
+constructBVH t o                   = error $ "Undefined constructBVH on object: " ++ (show o)
 
 -- Break the mesh up into a tree of bounding boxes
-dissectMesh :: Mesh -> ObjectTree
-dissectMesh (TriMesh faces shading) = dissect (cycle [v3x, v3y, v3z]) faces where
+dissectMesh :: Int -> Mesh -> ObjectTree
+dissectMesh faceThreshold (TriMesh faces shading) = dissect (cycle [v3x, v3y, v3z]) faces where
     dissect (dimF:dims) faces =
-        if (length faces) < facesThreshold
+        if (length faces) < faceThreshold
             then Bounding (boundingF faces) (Mesh (TriMesh faces shading))
             else
                 let aFace (Face a amb amc) = a in

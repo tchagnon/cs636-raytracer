@@ -33,9 +33,12 @@ import Control.Parallel.Strategies
 rayTracer :: Scene -> IO()
 rayTracer scene = do
     args                <- getArgs
-    let threads         =  read (head (args ++ ["1"])) :: Int
+    let args'           = map read args :: [Int]
+    let args''          = args' `elseL` [1, 50]
+    let threads         = args'' !! 0
+    let faceThreshold   = args'' !! 1
     lScene              <- loadScene scene
-    let pScene          = prepScene lScene
+    let pScene          = prepScene faceThreshold lScene
     let pixels          = makePixels pScene
     let pixels'         = evalParallel threads pixels
     writePPM (outfile pScene) (width pScene) (height pScene) pixels'
@@ -113,3 +116,7 @@ diffSpec mat ixPt nVec vVec light =
 avgPixels :: Int -> [Color] -> Color
 avgPixels n pixels = (1/(fromIntegral n)) `svMul` (sum pixels)
 
+-- Take elements from the first list if they exist, otherwise use corresponding elements from 2nd list
+elseL :: [a] -> [a] -> [a]
+elseL [] ys = ys
+elseL (x:xs) (y:ys) = x:(xs `elseL` ys)
