@@ -7,9 +7,13 @@
 module Mesh where
 
 import Data.Array
+import Data.List
+import Data.Function
 import Math
 import Ray
 import Material
+
+import Debug.Trace
 
 data Mesh = TriMesh ![(Face, Face)] MeshShading
     deriving (Show, Eq)
@@ -86,11 +90,24 @@ lookupNormal norms (ai, bi, ci)    =
 
 -- Gather Normals into lists associated with each of n verticesj
 collectNorms :: Int -> [(Int,Int,Int)] -> [Vec3f] -> [[Vec3f]]
-collectNorms n indices norms =
-    let matchIdx i ((a,b,c),_)  = if a==i || b==i || c==i then True else False in
-    let getNorm (_,n)           = n in
-    let normsIdx i              = map getNorm (filter (matchIdx i) (zip indices norms)) in
-    map normsIdx [0..(n-1)]
+collectNorms numVerts indices norms =
+    let splitIdx (a,b,c) n      = [(a,n),(b,n),(c,n)] in
+    let sortByIdx               = sortBy (compare `on` fst) in
+    let groupByIdx              = groupBy ((==) `on` fst) in
+    let removeIdx               = map (map snd) in
+    let fillIn                  = fillGaps [0..(numVerts-1)] in
+    let idxNorms                = concat (zipWith splitIdx indices norms) in
+    let norms                   = removeIdx $ groupByIdx $ fillIn $ sortByIdx $ idxNorms in
+    norms
+
+-- Fill gaps where there is no norm associated with a vertex
+fillGaps :: [Int] -> [(Int,Vec3f)] -> [(Int,Vec3f)]
+fillGaps [] _ = []
+fillGaps (x:xs) [] = (x,(Vec3f 1 0 0)):(fillGaps xs [])
+fillGaps (x:xs) ((i,v):vs)
+    | x < i     = (x,(Vec3f 1 0 0)):(fillGaps xs ((i,v):vs))
+    | x == i    = (i,v):(fillGaps xs vs)
+    | x > i     = (i,v):(fillGaps (x:xs) vs)
 
 -- Average vectors
 avgVecs :: [Vec3f] -> Vec3f

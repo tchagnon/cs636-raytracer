@@ -28,13 +28,14 @@ import Object
 
 import System.Environment
 import Control.Parallel.Strategies
+--import Control.Concurrent
 
 -- Top-level Rendering routine
 rayTracer :: Scene -> IO()
 rayTracer scene = do
     args                <- getArgs
     let args'           = map read args :: [Int]
-    let args''          = args' `elseL` [1, 35]
+    let args''          = args' `elseL` [1, 50]
     let threads         = args'' !! 0
     let faceThreshold   = args'' !! 1
     lScene              <- loadScene scene
@@ -49,9 +50,19 @@ evalParallel threads pixels =
     let chunkSize = (length pixels) `div` threads in
     pixels `using` (parListChunk chunkSize rnf)
 
+chunk :: Int -> [a] -> [[a]]
+chunk n [] = []
+chunk n xs =  (take n xs):(chunk n (drop n xs))
+
 -- Calculate each ray per pixel and call rayTrace
 makePixels :: Scene -> [Color]
 makePixels scene =
+    let (w, h)        = (width scene, height scene) in
+    let indices       = [ (j, k) | k <- [0..h-1], j <- [0..w-1]] in
+    map (makePixel scene) indices
+
+makePixel :: Scene -> (Int, Int) -> Color
+makePixel scene (j, k) =
     let sf            = superSample scene in
     let invSF         = 1/(fromIntegral sf) :: RealT in
     let (w, h)        = (width scene, height scene) in
@@ -73,10 +84,10 @@ makePixels scene =
     let ray j k       = Ray loc (norm (djk j k)) in
     let subIncr       = [0.0, invSF .. 1.0 - invSF] in
     let subsamples j k= [ray (j+x) (k+y) | x <- subIncr, y <- subIncr] in
-    let rays          = [subsamples (fromIntegral j) (fromIntegral k) | k <- [0..h-1], j <- [0..w-1]]  in
+    let rays          = subsamples (fromIntegral j) (fromIntegral k) in
     let singlePix rs  = avgPixels (sf^2) (map (rayTrace scene) rs) in
-    let pixels        = map singlePix rays in
-    pixels 
+    let pixel         = singlePix rays in
+    pixel
 
 -- Single Ray Trace
 rayTrace :: Scene -> Ray -> Color
