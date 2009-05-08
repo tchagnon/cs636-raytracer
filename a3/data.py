@@ -3,8 +3,8 @@
 import csv
 from commands import getoutput as go
 
-scenes = ['scene0', 'scene1']
-thresholds = range(2,100)
+scenes = ['scene1']
+thresholds = [2**x for x in range(1,15)]
 runs = 3
 
 for s in scenes:

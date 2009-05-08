@@ -15,8 +15,6 @@ import Mesh
 import Material
 import Bounding
 
-facesThreshold = 50
-
 data ObjectTree = Group [ObjectTree]
                 | Transform Mat4f ObjectTree
                 | Material Material ObjectTree

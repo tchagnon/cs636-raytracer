@@ -18,8 +18,8 @@ rcParams['xtick.direction'] = 'out'
 
 def makePlot(inputFile):
     A = load(inputFile, delimiter=',')
-    X = A[:49,0]
-    B = A[:49,1:]
+    X = A[:15,0]
+    B = A[:15,1:]
     mean = B.mean(axis=1)
     mins = mean - B.min(axis=1)
     maxs = B.max(axis=1) - mean
@@ -29,7 +29,7 @@ def makePlot(inputFile):
     spiralPlot(X,mean,yerr)
 
     xlabel('Faces per Bounding Box')
-    ylabel('Mean Time (seconds), Variance')
+    ylabel('Mean Time (seconds), Range')
     title('Bounding Box Threshold vs. Ray-tracing time'
         , horizontalalignment='left'
         , position=(-.05, 1.06)
@@ -45,7 +45,7 @@ def spiralPlot(X, Y, yerr):
     f.set_linewidth(0)
 
     # Make X tick marks for every data point
-    #xticks(X)
+    xticks(X)
     ax.xaxis.set_ticks_position('bottom')
 
     # Make all Y ticks white to be invisible
@@ -55,6 +55,8 @@ def spiralPlot(X, Y, yerr):
     # Horizontal grid of white lines
     ax.yaxis.grid(True, linestyle='-', color='white', linewidth=2)
 
+    ax.set_xscale('log', basex=2)
+
     errorbar(X, Y, yerr=yerr, xerr=None, fmt='o'
         , color = SPIRAL_RED
         #, markeredgecolor = SPIRAL_RED
@@ -63,8 +65,8 @@ def spiralPlot(X, Y, yerr):
         )
 
     # Shrink X axis to tight bounds with data plus a little
-    xmargin = 1
-    xlim( (min(X)-xmargin, max(X)+xmargin) )
+    #xmargin = 1
+    xlim( (min(X)-0.5, max(X)+4096) )
     ylim(ymin=0)
 
 def main():

@@ -1,9 +1,9 @@
 NAME
-    Assignment 2 - Add diffuse/specular shading model with point lights.
+    Assignment 3 - Add an acceleration technique
 
     Timothy A. Chagnon (tc365)
     CS 636 - Advanced Rendering Techniques
-    27 April 2009
+    8 May 2009
 
 DESCRIPTION
     This program takes a scene description with spheres and meshes and renders
@@ -20,6 +20,10 @@ FILES
   Scenes:
     scene0.hs               Bunny and 2 spheres
     scene1.hs               Campfire with bunny, frog, cow, teapot, outhouse.
+
+  New Code:
+    Bounding.hs             BoundingBox data structure and functions
+    Object.hs               Additional constructBVH and dissectMesh functions
 
   Core Code:
     RayTracer.hs            Top level ray tracing logic
