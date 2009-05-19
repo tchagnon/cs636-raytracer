@@ -28,6 +28,7 @@ import Object
 
 import System.Environment
 import Control.Parallel.Strategies
+import Data.Array
 --import Control.Concurrent
 
 -- Top-level Rendering routine
@@ -58,13 +59,46 @@ chunk n xs =  (take n xs):(chunk n (drop n xs))
 makePixels :: Scene -> [Color]
 makePixels scene =
     let (w, h)        = (width scene, height scene) in
+    let sf            = 2^(superSample scene) in
     let indices       = [ (j, k) | k <- [0..h-1], j <- [0..w-1]] in
-    map (makePixel scene) indices
+    let samples     = makeSampleArray scene in
+    map (avgSamples sf samples) indices
 
-makePixel :: Scene -> (Int, Int) -> Color
-makePixel scene (j, k) =
-    let sf            = superSample scene in
+--avgSamples :: Int -> Array (Int, Int) Color -> (Int, Int) -> Color
+avgSamples :: Int -> ((Int, Int) -> Color) -> (Int, Int) -> Color
+avgSamples 1  samples jk    = samples jk
+avgSamples sf samples (j, k)    =
+    let indices         = [(ji, ki) | ji <- [j,j+1], ki <- [k,k+1]] in
+    let nextIndices     = [(ji, ki) | ji <- [2*j,2*j+1], ki <- [2*k,2*k+1]] in
+    let localIndices    = [(x*sf, y*sf) | (x,y) <- indices] in
+    let [a,b,c,d]       = map samples localIndices in
+    let diffPixels      = map abs [a-b, c-d, a-c, b-d] in
+    let avgPixels pix   = (1/4) `svMul` (sum pix) in
+    if or (map (`colorGreaterThan` threshold) diffPixels)
+        then
+            avgPixels (map (avgSamples (sf `div` 2) samples) nextIndices)
+        else
+            avgPixels [a,b,c,d]
+
+-- Construct the super-resolution array of all possible samples
+-- Relies on lazy evaluation to not evaluate makePixel unless needed
+--makeSampleArray :: Scene -> Array (Int, Int) Color
+makeSampleArray :: Scene -> ((Int, Int) -> Color)
+makeSampleArray scene =
+    let (w, h)        = (width scene, height scene) in
+    let sf            = 2^(superSample scene) in
     let invSF         = 1/(fromIntegral sf) :: RealT in
+    let (wsf, hsf)    = (w*sf, h*sf) in
+    let f (j,k)       = makePixel scene ((fromIntegral j)*invSF, (fromIntegral k)*invSF) in
+    f
+--    let g (x,y)       = [[f (j,k) | k <- [0..hsf]] | j <- [0..wsf]] !! x !! y in
+--    let a =  array ((0,0),(wsf, hsf)) [((j,k),(makePixel scene ((fromIntegral j)*invSF, (fromIntegral k)*invSF)))
+--                                | j <- [0..wsf], k <- [0..hsf]] in
+--    (a!)
+
+-- Construct a single pixel by ray-tracing
+makePixel :: Scene -> (RealT, RealT) -> Color
+makePixel scene (j, k) =
     let (w, h)        = (width scene, height scene) in
     let cam           = camera scene in
     let d             = dist cam in
@@ -81,12 +115,8 @@ makePixel scene (j, k) =
     let djk j k       = (p00 + (j `svMul` pixelRightVec)
                              - (k `svMul` pixelDownVec))
                         - loc in
-    let ray j k       = Ray loc (norm (djk j k)) in
-    let subIncr       = [0.0, invSF .. 1.0 - invSF] in
-    let subsamples j k= [ray (j+x) (k+y) | x <- subIncr, y <- subIncr] in
-    let rays          = subsamples (fromIntegral j) (fromIntegral k) in
-    let singlePix rs  = avgPixels (sf^2) (map (rayTrace scene) rs) in
-    let pixel         = singlePix rays in
+    let ray           = Ray loc (norm (djk j k)) in
+    let pixel         = rayTrace scene ray in
     pixel
 
 -- Single Ray Trace
@@ -122,10 +152,6 @@ diffSpec mat ixPt nVec vVec light =
     let cosT               = nVec `dot0` lVec in
     let cosP               = (rVec `dot0` vVec) ** n in
     (kd * cosT + ks * cosP) `svMul` iL
-
--- Average pixels after supersampling
-avgPixels :: Int -> [Color] -> Color
-avgPixels n pixels = (1/(fromIntegral n)) `svMul` (sum pixels)
 
 -- Take elements from the first list if they exist, otherwise use corresponding elements from 2nd list
 elseL :: [a] -> [a] -> [a]

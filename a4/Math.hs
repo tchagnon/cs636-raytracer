@@ -33,7 +33,7 @@ instance Num Vec3f where
     Vec3f a b c + Vec3f d e f   = Vec3f (a+d) (b+e) (c+f)
     Vec3f a b c - Vec3f d e f   = Vec3f (a-d) (b-e) (c-f)
     (*)                         = cross
-    abs                         = norm
+    abs (Vec3f a b c)           = Vec3f (abs a) (abs b) (abs c)
     signum (Vec3f 0 0 0)        = zeroVec3f
     signum v                    = norm v
     fromInteger i               = Vec3f (fromInteger i) (fromInteger i) (fromInteger i)

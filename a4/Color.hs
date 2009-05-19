@@ -10,9 +10,14 @@ import Math
 
 type Color = Vec3f
 
-
 rgbDec :: RealT -> RealT -> RealT -> Color
 rgbDec r g b = Vec3f (r/255) (g/255) (b/255)
+
+colorGreaterThan :: Color -> Color -> Bool
+(Vec3f a b c) `colorGreaterThan` (Vec3f d e f) =
+    a > d || b > e || c > f
+
+threshold = vec3f 0.1 0.1 0.1
 
 -- Constant typical colors
 white           :: Color
