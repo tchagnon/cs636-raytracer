@@ -17,8 +17,6 @@ colorGreaterThan :: Color -> Color -> Bool
 (Vec3f a b c) `colorGreaterThan` (Vec3f d e f) =
     a > d || b > e || c > f
 
-threshold = vec3f 0.1 0.1 0.1
-
 -- Constant typical colors
 white           :: Color
 white           = vec3f 1 1 1

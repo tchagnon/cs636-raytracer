@@ -21,6 +21,8 @@ data Scene =
         width           :: Int,
         height          :: Int,
         superSample     :: Int,
+        outputSampleMap :: Bool,
+        sampleThreshold :: Color,
         background      :: Color,
         ambientLight    :: Color,
         defaultMaterial :: Material,

@@ -29,7 +29,7 @@ import Object
 import System.Environment
 import Control.Parallel.Strategies
 import Data.Array
---import Control.Concurrent
+import Debug.Trace
 
 -- Top-level Rendering routine
 rayTracer :: Scene -> IO()
@@ -43,10 +43,10 @@ rayTracer scene = do
     let pScene          = prepScene faceThreshold lScene
     let pixels          = makePixels pScene
     let pixels'         = evalParallel threads pixels
-    writePPM (outfile pScene) (width pScene) (height pScene) pixels'
+    writeImage pScene pixels'
 
 -- Split up evaluation of pixels over multiple threads
-evalParallel :: Int -> [Color] -> [Color]
+evalParallel :: Int -> [(Color,Int)] -> [(Color,Int)]
 evalParallel threads pixels =
     let chunkSize = (length pixels) `div` threads in
     pixels `using` (parListChunk chunkSize rnf)
@@ -56,26 +56,27 @@ chunk n [] = []
 chunk n xs =  (take n xs):(chunk n (drop n xs))
 
 -- Calculate each ray per pixel and call rayTrace
-makePixels :: Scene -> [Color]
+makePixels :: Scene -> [(Color,Int)]
 makePixels scene =
     let (w, h)        = (width scene, height scene) in
     makeRows scene h Nothing
 
 -- Generate pixels, one row at a time
-makeRows :: Scene -> Int -> Maybe (Array (Int,Int) Color) -> [Color]
+makeRows :: Scene -> Int -> Maybe (Array (Int,Int) Color) -> [(Color,Int)]
 makeRows scene 0  lastRowArray = []
 makeRows scene k' lastRowArray =
     let (w, h)          = (width scene, height scene) in
     let k               = h-k' in
     let sf              = 2^(superSample scene) in
+    let threshold       = sampleThreshold scene in
     let rowArr          = makeRowArray scene k lastRowArray in
     let indices         = [(j,k) | j <- [0..w-1]] in
-    (map (avgSamples sf rowArr) indices) ++ (makeRows scene (k'-1) (Just rowArr))
+    (map (avgSamples threshold sf rowArr) indices) ++ (makeRows scene (k'-1) (Just rowArr))
 
 -- Recursive adaptive super-sampling
-avgSamples :: Int -> Array (Int, Int) Color -> (Int, Int) -> Color
-avgSamples 1  samples jk    = samples ! jk
-avgSamples sf samples (j, k)    =
+avgSamples :: Color -> Int -> Array (Int, Int) Color -> (Int, Int) -> (Color,Int)
+avgSamples threshold 0  samples (j, k)    = (samples ! (j`div`2 + j`rem`2, k`div`2 + k`rem`2) , 1)
+avgSamples threshold sf samples (j, k)    =
     let indices         = [(ji, ki) | ji <- [j,j+1], ki <- [k,k+1]] in
     let nextIndices     = [(ji, ki) | ji <- [2*j,2*j+1], ki <- [2*k,2*k+1]] in
     let localIndices    = [(x*sf, y*sf) | (x,y) <- indices] in
@@ -84,9 +85,10 @@ avgSamples sf samples (j, k)    =
     let avgPixels pix   = (1/4) `svMul` (sum pix) in
     if or (map (`colorGreaterThan` threshold) diffPixels)
         then
-            avgPixels (map (avgSamples (sf `div` 2) samples) nextIndices)
+            let (pix, num) = unzip (map (avgSamples threshold (sf `div` 2) samples) nextIndices) in
+            (avgPixels pix, (sum num))
         else
-            avgPixels [a,b,c,d]
+            (avgPixels [a,b,c,d], 4)
 
 -- Construct the super-resolution array of all possible samples for the current row
 -- Relies on lazy evaluation to not evaluate makePixel unless needed
@@ -127,6 +129,7 @@ makePixel scene (j, k) =
                         - loc in
     let ray           = Ray loc (norm (djk j k)) in
     let pixel         = rayTrace scene ray in
+    --trace "1"
     pixel
 
 -- Single Ray Trace
