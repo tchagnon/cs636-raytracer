@@ -59,19 +59,27 @@ chunk n xs =  (take n xs):(chunk n (drop n xs))
 makePixels :: Scene -> [Color]
 makePixels scene =
     let (w, h)        = (width scene, height scene) in
-    let sf            = 2^(superSample scene) in
-    let indices       = [ (j, k) | k <- [0..h-1], j <- [0..w-1]] in
-    let samples     = makeSampleArray scene in
-    map (avgSamples sf samples) indices
+    makeRows scene h Nothing
 
---avgSamples :: Int -> Array (Int, Int) Color -> (Int, Int) -> Color
-avgSamples :: Int -> ((Int, Int) -> Color) -> (Int, Int) -> Color
-avgSamples 1  samples jk    = samples jk
+-- Generate pixels, one row at a time
+makeRows :: Scene -> Int -> Maybe (Array (Int,Int) Color) -> [Color]
+makeRows scene 0  lastRowArray = []
+makeRows scene k' lastRowArray =
+    let (w, h)          = (width scene, height scene) in
+    let k               = h-k' in
+    let sf              = 2^(superSample scene) in
+    let rowArr          = makeRowArray scene k lastRowArray in
+    let indices         = [(j,k) | j <- [0..w-1]] in
+    (map (avgSamples sf rowArr) indices) ++ (makeRows scene (k'-1) (Just rowArr))
+
+-- Recursive adaptive super-sampling
+avgSamples :: Int -> Array (Int, Int) Color -> (Int, Int) -> Color
+avgSamples 1  samples jk    = samples ! jk
 avgSamples sf samples (j, k)    =
     let indices         = [(ji, ki) | ji <- [j,j+1], ki <- [k,k+1]] in
     let nextIndices     = [(ji, ki) | ji <- [2*j,2*j+1], ki <- [2*k,2*k+1]] in
     let localIndices    = [(x*sf, y*sf) | (x,y) <- indices] in
-    let [a,b,c,d]       = map samples localIndices in
+    let [a,b,c,d]       = map (samples!) localIndices in
     let diffPixels      = map abs [a-b, c-d, a-c, b-d] in
     let avgPixels pix   = (1/4) `svMul` (sum pix) in
     if or (map (`colorGreaterThan` threshold) diffPixels)
@@ -80,21 +88,23 @@ avgSamples sf samples (j, k)    =
         else
             avgPixels [a,b,c,d]
 
--- Construct the super-resolution array of all possible samples
+-- Construct the super-resolution array of all possible samples for the current row
 -- Relies on lazy evaluation to not evaluate makePixel unless needed
---makeSampleArray :: Scene -> Array (Int, Int) Color
-makeSampleArray :: Scene -> ((Int, Int) -> Color)
-makeSampleArray scene =
+-- Uses the bottom samples from the last row if possible
+makeRowArray :: Scene -> Int -> Maybe (Array (Int,Int) Color) -> Array (Int, Int) Color
+makeRowArray scene row lastRow =
     let (w, h)        = (width scene, height scene) in
     let sf            = 2^(superSample scene) in
     let invSF         = 1/(fromIntegral sf) :: RealT in
     let (wsf, hsf)    = (w*sf, h*sf) in
     let f (j,k)       = makePixel scene ((fromIntegral j)*invSF, (fromIntegral k)*invSF) in
-    f
---    let g (x,y)       = [[f (j,k) | k <- [0..hsf]] | j <- [0..wsf]] !! x !! y in
---    let a =  array ((0,0),(wsf, hsf)) [((j,k),(makePixel scene ((fromIntegral j)*invSF, (fromIntegral k)*invSF)))
---                                | j <- [0..wsf], k <- [0..hsf]] in
---    (a!)
+    case lastRow of
+        Nothing   -> array ((0,row*sf),(wsf, (row+1)*sf)) 
+                     [((j,k),(f (j,k))) | j <- [0..wsf], k <- [row*sf..(row+1)*sf]]
+        Just lrow -> array ((0,row*sf),(wsf, (row+1)*sf))
+                    ([((j,row*sf),(lrow!(j,row*sf))) | j <- [0..wsf]] ++
+                     [((j,k),(f (j,k))) | j <- [0..wsf], k <- [row*sf+1..(row+1)*sf]])
+    
 
 -- Construct a single pixel by ray-tracing
 makePixel :: Scene -> (RealT, RealT) -> Color
