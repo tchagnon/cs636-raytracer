@@ -138,33 +138,40 @@ rayTrace scene ray =
     let objs        = objects scene in
     let defMat      = defaultMaterial scene in
     let inters      = intersect ray defMat objs in
-    getColor ray inters scene
+    getColor scene ray inters
 
 -- Interpret a list of intersections as a color
-getColor :: Ray -> [Intersection] -> Scene -> Color
-getColor _         [] scene       = background scene
-getColor (Ray o d) ints scene     =
+getColor :: Scene -> Ray -> [Intersection] -> Color
+getColor scene _         []       = background scene
+getColor scene (Ray o d) ints     =
     let (Inx t nVec mat)   = minimum ints in
     let ixPt               = o + (t `svMul` d) in
     let ka                 = Material.ka mat in
     let c                  = Material.c mat in
     let iA                 = ambientLight scene in
     let vVec               = (-d) in
-    let diffSpecLights     = map (diffSpec mat ixPt nVec vVec) (lights scene) in
+    let diffSpecLights     = map (diffSpec scene mat ixPt nVec vVec) (lights scene) in
     c .* (foldl (+) (ka `svMul` iA) diffSpecLights)
 
--- Calculate the diffuse and specular light intesity of a single light
-diffSpec :: Material -> Vec3f -> Vec3f -> Vec3f -> Light -> Color
-diffSpec mat ixPt nVec vVec light =
+-- Calculate the specular and diffuse light intesity of a single light
+diffSpec :: Scene -> Material -> Vec3f -> Vec3f -> Vec3f -> Light -> Color
+diffSpec scene mat ixPt nVec vVec light =
     let kd                 = Material.kd mat in
     let ks                 = Material.ks mat in
     let n                  = Material.n mat in
     let iL                 = color light in
     let lVec               = norm ((position light)-ixPt) in
     let rVec               = norm (((2 * (nVec `dot0` lVec)) `svMul` nVec) - lVec) in
+    let hVec               = norm (lVec + vVec) in
     let cosT               = nVec `dot0` lVec in
-    let cosP               = (rVec `dot0` vVec) ** n in
-    (kd * cosT + ks * cosP) `svMul` iL
+    let cosP               = (nVec `dot0` hVec) ** n in
+    let reflectPoint       = ixPt + (epsilon `svMul` lVec) in
+    let shadowInters       = intersect (Ray reflectPoint lVec) (defaultMaterial scene) (objects scene) in
+    if null shadowInters
+        then
+--    (cosP `svMul` iL, cosT `svMul` iL)
+            (kd * cosT + ks * cosP) `svMul` iL
+        else black
 
 -- Take elements from the first list if they exist, otherwise use corresponding elements from 2nd list
 elseL :: [a] -> [a] -> [a]
