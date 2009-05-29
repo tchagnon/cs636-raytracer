@@ -18,3 +18,5 @@ data Intersection = Inx RealT Vec3f  Material
 instance Ord Intersection where
     compare (Inx t0 _ _) (Inx t1 _ _) = compare t0 t1
 
+intxLessThan :: Intersection -> RealT -> Bool
+intxLessThan (Inx t0 _ _) t1 = t0 < t1

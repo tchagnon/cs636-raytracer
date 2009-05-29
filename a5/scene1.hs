@@ -105,6 +105,7 @@ mat0 =
         kd = 0.7,
         ks = 0.3,
         ka = 0.1,
+        kt = 0.0,
         n  = 30,
         c  = white
     }
@@ -117,6 +118,7 @@ matFire     =
         kd = 0.8,
         ks = 0.1,
         ka = 0.5,
+        kt = 1.0,
         n  = 5,
         c  = orange
     }
@@ -126,6 +128,7 @@ matFrog =
         kd = 0.6,
         ks = 1.0,
         ka = 0.3,
+        kt = 0.0,
         n  = 70,
         c  = darkGreen
     }
@@ -135,6 +138,7 @@ matOuthouse     =
         kd = 0.4,
         ks = 0.2,
         ka = 0.4,
+        kt = 0.0,
         n  = 5,
         c  = brown
     }

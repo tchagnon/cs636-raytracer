@@ -154,23 +154,28 @@ getColor scene (Ray o d) ints     =
     c .* (foldl (+) (ka `svMul` iA) diffSpecLights)
 
 -- Calculate the specular and diffuse light intesity of a single light
-diffSpec :: Scene -> Material -> Vec3f -> Vec3f -> Vec3f -> Light -> Color
+diffSpec :: Scene -> Material -> Vec3f -> Vec3f -> Vec3f -> Light -> Color --(Color, Color)
 diffSpec scene mat ixPt nVec vVec light =
     let kd                 = Material.kd mat in
     let ks                 = Material.ks mat in
     let n                  = Material.n mat in
     let iL                 = color light in
-    let lVec               = norm ((position light)-ixPt) in
+    let lVector            = (position light)-ixPt in
+    let lDist              = mag lVector in
+    let lVec               = norm lVector in
     let rVec               = norm (((2 * (nVec `dot0` lVec)) `svMul` nVec) - lVec) in
     let hVec               = norm (lVec + vVec) in
     let cosT               = nVec `dot0` lVec in
     let cosP               = (nVec `dot0` hVec) ** n in
     let reflectPoint       = ixPt + (epsilon `svMul` lVec) in
     let shadowInters       = intersect (Ray reflectPoint lVec) (defaultMaterial scene) (objects scene) in
-    if null shadowInters
+    let betweenInters      = filter (`intxLessThan` lDist) shadowInters in
+    let shadowTransmit     = foldl (*) 1.0 (map (\(Inx _ _ m)-> kt m) betweenInters) in
+    --if null shadowInters
+    if shadowTransmit > 0.0
         then
---    (cosP `svMul` iL, cosT `svMul` iL)
-            (kd * cosT + ks * cosP) `svMul` iL
+            --(cosP `svMul` iL, cosT `svMul` iL)
+            (shadowTransmit * (kd * cosT + ks * cosP)) `svMul` iL
         else black
 
 -- Take elements from the first list if they exist, otherwise use corresponding elements from 2nd list

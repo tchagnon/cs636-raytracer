@@ -14,6 +14,7 @@ data Material =
         kd      :: RealT,
         ks      :: RealT,
         ka      :: RealT,
+        kt      :: RealT,
         n       :: RealT,
         c       :: Color
     }
