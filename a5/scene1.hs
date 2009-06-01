@@ -107,11 +107,12 @@ mat0 =
         ka = 0.1,
         kt = 0.0,
         n  = 30,
-        c  = white
+        cs = white,
+        cd = white
     }
 
-matRocks = mat0 {c = gray}
-matBunny = mat0 {c = cornflowerBlue}
+matRocks = mat0 {cd = gray}
+matBunny = mat0 {cd = cornflowerBlue}
 
 matFire     =
     PhongMaterial {
@@ -120,7 +121,8 @@ matFire     =
         ka = 0.5,
         kt = 1.0,
         n  = 5,
-        c  = orange
+        cs = white,
+        cd = orange
     }
 
 matFrog =
@@ -130,7 +132,8 @@ matFrog =
         ka = 0.3,
         kt = 0.0,
         n  = 70,
-        c  = darkGreen
+        cs = white,
+        cd = darkGreen
     }
 
 matOuthouse     =
@@ -140,7 +143,8 @@ matOuthouse     =
         ka = 0.4,
         kt = 0.0,
         n  = 5,
-        c  = brown
+        cs = white,
+        cd = brown
     }
 
-matCow = matOuthouse {c = darkBrown}
+matCow = matOuthouse {cd = darkBrown}

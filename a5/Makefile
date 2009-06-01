@@ -8,6 +8,8 @@ OPTIMIZE = -O2 -funbox-strict-fields -fexcess-precision -funfolding-keeness-fact
 VIAC = -fvia-C -optc-O3 -optc-msse3 -optc-ffast-math
 THREADS = 4
 
+.PHONY: all test clean
+
 all: $(SCENES)
 
 %: %.hs  $(addsuffix .hs,$(DEPENDS))
@@ -15,11 +17,9 @@ all: $(SCENES)
 
 %.ppm: %
 	time -p ./$< $(THREADS) +RTS -N$(THREADS)
+	display $@
 
-test: $(addsuffix .test,$(IMAGES))
-
-%.test: %
-	display $<
+test: $(IMAGES)
 
 clean:
 	-rm -f *.hi *.o *.ppm $(SCENES)

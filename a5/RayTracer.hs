@@ -31,6 +31,8 @@ import Control.Parallel.Strategies
 import Data.Array
 import Debug.Trace
 
+reflectionDepth = 2
+
 -- Top-level Rendering routine
 rayTracer :: Scene -> IO()
 rayTracer scene = do
@@ -128,42 +130,49 @@ makePixel scene (j, k) =
                              - (k `svMul` pixelDownVec))
                         - loc in
     let ray           = Ray loc (norm (djk j k)) in
-    let pixel         = rayTrace scene ray in
+    let pixel         = rayTrace scene ray reflectionDepth in
     --trace "1"
     pixel
 
 -- Single Ray Trace
-rayTrace :: Scene -> Ray -> Color
-rayTrace scene ray =
+rayTrace :: Scene -> Ray -> Int -> Color
+rayTrace scene ray 0        = black
+rayTrace scene ray rDepth   =
     let objs        = objects scene in
     let defMat      = defaultMaterial scene in
     let inters      = intersect ray defMat objs in
-    getColor scene ray inters
+    getColor scene ray rDepth inters
 
 -- Interpret a list of intersections as a color
-getColor :: Scene -> Ray -> [Intersection] -> Color
-getColor scene _         []       = background scene
-getColor scene (Ray o d) ints     =
+getColor :: Scene -> Ray -> Int -> [Intersection] -> Color
+getColor scene _         rDepth []       = background scene
+getColor scene (Ray o d) rDepth ints     =
     let (Inx t nVec mat)   = minimum ints in
     let ixPt               = o + (t `svMul` d) in
+    let ks                 = Material.ks mat in
+    let kd                 = Material.kd mat in
     let ka                 = Material.ka mat in
-    let c                  = Material.c mat in
-    let iA                 = ambientLight scene in
+    let cs                 = Material.cs mat in
+    let cd                 = Material.cd mat in
     let vVec               = (-d) in
+    let rVec               = norm (((2 * (nVec `dot0` vVec)) `svMul` nVec) - vVec) in
+    let reflectPoint       = ixPt + (epsilon `svMul` rVec) in
+    let iA                 = ambientLight scene in
+    let iR                 = rayTrace scene (Ray reflectPoint rVec) (rDepth-1) in
     let diffSpecLights     = map (diffSpec scene mat ixPt nVec vVec) (lights scene) in
-    c .* (foldl (+) (ka `svMul` iA) diffSpecLights)
+    let (specLs, diffLs)   = unzip diffSpecLights in
+    let specL              = (ks `svMul` cs) .* (foldl (+) iR specLs) in
+    let diffL              = (kd `svMul` cd) .* (foldl (+) iA diffLs) in
+    specL + diffL
 
 -- Calculate the specular and diffuse light intesity of a single light
-diffSpec :: Scene -> Material -> Vec3f -> Vec3f -> Vec3f -> Light -> Color --(Color, Color)
+diffSpec :: Scene -> Material -> Vec3f -> Vec3f -> Vec3f -> Light -> (Color, Color)
 diffSpec scene mat ixPt nVec vVec light =
-    let kd                 = Material.kd mat in
-    let ks                 = Material.ks mat in
     let n                  = Material.n mat in
     let iL                 = color light in
     let lVector            = (position light)-ixPt in
     let lDist              = mag lVector in
     let lVec               = norm lVector in
-    let rVec               = norm (((2 * (nVec `dot0` lVec)) `svMul` nVec) - lVec) in
     let hVec               = norm (lVec + vVec) in
     let cosT               = nVec `dot0` lVec in
     let cosP               = (nVec `dot0` hVec) ** n in
@@ -171,12 +180,11 @@ diffSpec scene mat ixPt nVec vVec light =
     let shadowInters       = intersect (Ray reflectPoint lVec) (defaultMaterial scene) (objects scene) in
     let betweenInters      = filter (`intxLessThan` lDist) shadowInters in
     let shadowTransmit     = foldl (*) 1.0 (map (\(Inx _ _ m)-> kt m) betweenInters) in
-    --if null shadowInters
     if shadowTransmit > 0.0
         then
-            --(cosP `svMul` iL, cosT `svMul` iL)
-            (shadowTransmit * (kd * cosT + ks * cosP)) `svMul` iL
-        else black
+            ((shadowTransmit * cosP) `svMul` iL, (shadowTransmit * cosT) `svMul` iL)
+        else
+            (black, black)
 
 -- Take elements from the first list if they exist, otherwise use corresponding elements from 2nd list
 elseL :: [a] -> [a] -> [a]

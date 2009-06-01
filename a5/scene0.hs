@@ -49,15 +49,16 @@ scene0 =
 
 mat0 =
     PhongMaterial {
-        kd = 0.7,
-        ks = 0.3,
+        kd = 0.5,
+        ks = 0.1,
         ka = 0.1,
         kt = 0.0,
         n  = 30,
-        c  = white
+        cs = white,
+        cd = white
     }
 
-matBlue = mat0 {c = cornflowerBlue}
+matBlue = mat0 {cd = cornflowerBlue}
 
 light0 =
     PointLight {

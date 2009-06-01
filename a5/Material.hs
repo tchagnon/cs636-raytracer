@@ -16,6 +16,7 @@ data Material =
         ka      :: RealT,
         kt      :: RealT,
         n       :: RealT,
-        c       :: Color
+        cs      :: Color,
+        cd      :: Color
     }
     deriving (Show, Eq)
