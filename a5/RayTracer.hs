@@ -31,7 +31,7 @@ import Control.Parallel.Strategies
 import Data.Array
 import Debug.Trace
 
-reflectionDepth = 2
+reflectionDepth = 3
 
 -- Top-level Rendering routine
 rayTracer :: Scene -> IO()

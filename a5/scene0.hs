@@ -35,6 +35,8 @@ scene0 =
                     Primitive (sphere 0.4)),
                 Transform (translate (vec3f   1  1 0)) (
                     Primitive (sphere 0.4)),
+                Transform (translate (vec3f 0 (-0.80) 0)) (
+                    Primitive (Plane (vec3f 0 0 0) (vec3f 0 0 1) (vec3f 1 0 0))),
                 Material matBlue (
                     Transform (translate (vec3f 0 (-0.3) 2.5)) (
                         --LoadMesh "../models/octahedron.smf" FlatShade

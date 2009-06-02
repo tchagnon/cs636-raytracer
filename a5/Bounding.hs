@@ -12,6 +12,7 @@ import Math
 import Ray
 
 data Bounding = BoundingBox !Vec3f !Vec3f
+              | Unbounded
     deriving (Show, Eq)
 
 -- Construct a bounding volume from a primitive
@@ -19,6 +20,8 @@ boundingP :: Primitive -> Bounding
 boundingP (Sphere r c) =
     let vecR = Vec3f r r r in
     BoundingBox (c-vecR) (c+vecR)
+boundingP (Plane a b c) =
+    Unbounded
     
 -- Construct a bounding volume from a Mesh
 boundingM :: Mesh -> Bounding
@@ -52,6 +55,7 @@ minMaxFaces = foldl f ((Vec3f inf inf inf),(Vec3f (-inf) (-inf) (-inf))) where
 
 -- Determine if there is an intersection with the bounding box
 intersectB :: Ray -> Bounding -> Bool
+intersectB (Ray o d) Unbounded               = True
 intersectB (Ray o d) (BoundingBox minV maxV) =
     let (Vec3f roX roY roZ) = o in
     let (Vec3f rdX rdY rdZ) = d in
