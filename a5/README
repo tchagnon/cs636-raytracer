@@ -1,9 +1,9 @@
 NAME
-    Assignment 4 - Add adaptive supersampling/anti-aliasing.
+    Assignment 5 - Add shadows and reflections.
 
     Timothy A. Chagnon (tc365)
     CS 636 - Advanced Rendering Techniques
-    20 May 2009
+    2 June 2009
 
 DESCRIPTION
     This program takes a scene description with spheres and meshes and renders
@@ -18,13 +18,13 @@ DEVELOPMENT ENVIRONMENT
 FILES
 
   Scenes:
-    scene0.hs               Bunny and 2 spheres
-    scene1.hs               Campfire with bunny, frog, cow, teapot, outhouse.
+    scene0.hs               Trefoil of spheres, bunny, cow, teapot.
 
   New Code:
-    RayTracer.hs            Additional code for adaptive super sampling
-                            Lines: 58-108
-                            New Functions: makeRows, avgSamples, makeRowArray
+    RayTracer.hs            Additional code for shadows, reflections
+                            Lines: 145-186
+                            In existing functions: getColor, diffSpec
+    Primitive.hs            Added Plane
 
   Core Code:
     RayTracer.hs            Top level ray tracing logic
