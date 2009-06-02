@@ -31,8 +31,6 @@ import Control.Parallel.Strategies
 import Data.Array
 import Debug.Trace
 
-reflectionDepth = 3
-
 -- Top-level Rendering routine
 rayTracer :: Scene -> IO()
 rayTracer scene = do
@@ -115,6 +113,7 @@ makePixel :: Scene -> (RealT, RealT) -> Color
 makePixel scene (j, k) =
     let (w, h)        = (width scene, height scene) in
     let cam           = camera scene in
+    let reflectDepth  = reflectionDepth scene in
     let d             = dist cam in
     let theta         = deg2rad (fovAngle cam) in
     let loc           = location cam in
@@ -130,7 +129,7 @@ makePixel scene (j, k) =
                              - (k `svMul` pixelDownVec))
                         - loc in
     let ray           = Ray loc (norm (djk j k)) in
-    let pixel         = rayTrace scene ray reflectionDepth in
+    let pixel         = rayTrace scene ray reflectDepth in
     --trace "1"
     pixel
 

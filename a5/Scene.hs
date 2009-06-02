@@ -23,6 +23,7 @@ data Scene =
         superSample     :: Int,
         outputSampleMap :: Bool,
         sampleThreshold :: Color,
+        reflectionDepth :: Int,
         background      :: Color,
         ambientLight    :: Color,
         defaultMaterial :: Material,

@@ -28,6 +28,10 @@ green           :: Color
 green           = vec3f 0 1 0
 blue            :: Color
 blue            = vec3f 0 0 1
+azure           :: Color
+azure           = vec3f 0 0.5 1.0
+skyBlue         :: Color
+skyBlue         = rgbDec 135 206 235
 orange          :: Color
 orange          = vec3f 1 0.5 0
 brown           :: Color
