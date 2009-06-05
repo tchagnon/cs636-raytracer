@@ -1,0 +1,55 @@
+NAME
+    Assignment 5 - Add shadows and reflections.
+
+    Timothy A. Chagnon (tc365)
+    CS 636 - Advanced Rendering Techniques
+    2 June 2009
+
+DESCRIPTION
+    This program takes a scene description with spheres and meshes and renders
+    the scene to PPM image format.  The program is written in Haskell.
+
+DEVELOPMENT ENVIRONMENT
+    vim
+    GHC         6.10.1
+    GNU Make    3.81-3build1
+    Ubuntu      8.04 (x86_64)
+
+FILES
+
+  Scenes:
+    scene0.hs               Trefoil of spheres, bunny, cow, teapot.
+
+  New Code:
+    RayTracer.hs            Additional code for shadows, reflections
+                            Lines: 145-186
+                            In existing functions: getColor, diffSpec
+    Primitive.hs            Added Plane
+
+  Core Code:
+    RayTracer.hs            Top level ray tracing logic
+    Scene.hs                Scene description objects
+    Mesh.hs                 Triangle mesh code
+    Primitive.hs            Primitive shapes
+    Bounding.hs             BoundingBox data structure and functions
+    Object.hs               Heirarchical Object Tree
+    Ray.hs                  Ray object
+    Math.hs                 Linear Algebra directly implemented
+    Image.hs                Writing to PPM
+    Color.hs                Colors
+    Material.hs             Material type
+
+  Other:
+    README
+    Makefile
+
+COMPILING
+    $ make
+        Builds scene executables
+
+    $ make test
+        Renders all scenes, displays PPM files via ImageMagick display command.
+
+    $ make clean
+        Removes all built files
+
