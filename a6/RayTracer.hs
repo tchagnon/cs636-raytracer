@@ -128,7 +128,7 @@ makePixel scene (j, k) =
     let djk j k       = (p00 + (j `svMul` pixelRightVec)
                              - (k `svMul` pixelDownVec))
                         - loc in
-    let ray           = Ray loc (norm (djk j k)) in
+    let ray           = Ray loc (norm (djk j k)) etaAir in
     let pixel         = rayTrace scene ray reflectDepth in
     --trace "1"
     pixel
@@ -145,45 +145,64 @@ rayTrace scene ray rDepth   =
 -- Interpret a list of intersections as a color
 getColor :: Scene -> Ray -> Int -> [Intersection] -> Color
 getColor scene _         rDepth []       = background scene
-getColor scene (Ray o d) rDepth ints     =
-    let (Inx t nVec mat)   = minimum ints in
-    let ixPt               = o + (t `svMul` d) in
-    let ks                 = Material.ks mat in
-    let kd                 = Material.kd mat in
-    let ka                 = Material.ka mat in
-    let cs                 = Material.cs mat in
-    let cd                 = Material.cd mat in
-    let vVec               = (-d) in
-    let rVec               = norm (((2 * (nVec `dot0` vVec)) `svMul` nVec) - vVec) in
-    let reflectPoint       = ixPt + (epsilon `svMul` rVec) in
-    let iA                 = ambientLight scene in
-    let iR                 = rayTrace scene (Ray reflectPoint rVec) (rDepth-1) in
-    let diffSpecLights     = map (diffSpec scene mat ixPt nVec vVec) (lights scene) in
-    let (specLs, diffLs)   = unzip diffSpecLights in
-    let specL              = (ks `svMul` cs) .* (foldl (+) iR specLs) in
-    let diffL              = (kd `svMul` cd) .* (foldl (+) iA diffLs) in
-    specL + diffL
+getColor scene (Ray o d etaI) rDepth ints     =
+    let (Inx t nVec mat)          = minimum ints in
+    let ixPt                      = o + (t `svMul` d) in
+    let ks                        = Material.ks mat in
+    let kd                        = Material.kd mat in
+    let ka                        = Material.ka mat in
+    let kt                        = Material.kt mat in
+    let cs                        = Material.cs mat in
+    let cd                        = Material.cd mat ixPt in
+    let ct                        = Material.ct mat in
+    let etaJ                      = Material.eta mat in
+    let etaR                      = if etaI == etaJ then etaI / etaAir else etaI / etaJ in -- FIXME
+    let vVec                      = (-d) in
+    let rVec                      = norm (((2 * (nVec `dot0` vVec)) `svMul` nVec) - vVec) in
+    let tVec                      = norm (getTvec etaR nVec vVec) in
+    let reflectPoint              = ixPt + (epsilon `svMul` rVec) in
+    let transmitPoint             = ixPt + (epsilon `svMul` (tVec)) in
+    let iA                        = ambientLight scene in
+    let iR                        = rayTrace scene (Ray reflectPoint rVec etaI) (rDepth-1) in
+    let iT                        = rayTrace scene (Ray transmitPoint tVec etaJ) (rDepth-1) in
+    let diffSpecLights            = map (diffSpec scene mat ixPt nVec vVec tVec) (lights scene) in
+    let (specLs, diffLs, transLs) = unzip3 diffSpecLights in
+    let specL                     = (ks `svMul` cs) .* (foldl (+) iR specLs) in
+    let diffL                     = (kd `svMul` cd) .* (foldl (+) iA diffLs) in
+    let transL                    = (kt `svMul` ct) .* (foldl (+) iT transLs) in
+    specL + diffL + transL
 
--- Calculate the specular and diffuse light intesity of a single light
-diffSpec :: Scene -> Material -> Vec3f -> Vec3f -> Vec3f -> Light -> (Color, Color)
-diffSpec scene mat ixPt nVec vVec light =
+-- Calculate the specular, diffuse, and transmissive light intesity of a single light
+diffSpec :: Scene -> Material -> Vec3f -> Vec3f -> Vec3f -> Vec3f -> Light -> (Color, Color, Color)
+diffSpec scene mat ixPt nVec vVec tVec light =
     let n                  = Material.n mat in
+    let m                  = Material.m mat in
     let iL                 = color light in
     let lVector            = (position light)-ixPt in
     let lDist              = mag lVector in
     let lVec               = norm lVector in
     let hVec               = norm (lVec + vVec) in
-    let cosT               = nVec `dot0` lVec in
-    let cosP               = (nVec `dot0` hVec) ** n in
-    let reflectPoint       = ixPt + (epsilon `svMul` lVec) in
-    let shadowInters       = intersect (Ray reflectPoint lVec) (defaultMaterial scene) (objects scene) in
-    let betweenInters      = filter (`intxLessThan` lDist) shadowInters in
-    let shadowTransmit     = foldl (*) 1.0 (map (\(Inx _ _ m)-> kt m) betweenInters) in
-    if shadowTransmit > 0.0
-        then
-            ((shadowTransmit * cosP) `svMul` iL, (shadowTransmit * cosT) `svMul` iL)
-        else
-            (black, black)
+    let cosPhi             = (nVec `dot0` hVec) ** n in
+    let cosTheta           = nVec `dot0` lVec in
+    let cosAlpha           = (tVec `dot0` lVec) ** m in
+    let reflectPoint       = ixPt + (epsilon `svMul` nVec) in
+    let transmitPoint      = ixPt + (epsilon `svMul` (-nVec)) in
+    let shadowRInters      = intersect (Ray reflectPoint lVec etaAir) mat (objects scene) in
+    let shadowTInters      = intersect (Ray transmitPoint lVec etaAir) mat (objects scene) in
+    let betweenRInters     = filter (`intxLessThan` lDist) shadowRInters in
+    let betweenTInters     = filter (`intxLessThan` lDist) shadowTInters in
+    let shadowRTransmit    = foldl (*) 1.0 (map (\(Inx _ _ m)-> kt m) betweenRInters) in
+    let shadowTTransmit    = foldl (*) 1.0 (map (\(Inx _ _ m)-> kt m) betweenTInters) in
+    ((shadowRTransmit * cosPhi) `svMul` iL, (shadowRTransmit * cosTheta) `svMul` iL, (shadowTTransmit * cosAlpha) `svMul` iL)
+
+-- Get transmission vector
+getTvec :: RealT -> Vec3f -> Vec3f -> Vec3f
+getTvec eta n v =
+    let discrim = 1 - ((eta**2)*(1 - ((n `dot` v)**2))) in
+    let t       = (((eta * (n `dot` v)) - (sqrt discrim)) `svMul` n) - (eta `svMul` v) in
+    if discrim >= 0
+        then t
+        else (-v)
 
 -- Take elements from the first list if they exist, otherwise use corresponding elements from 2nd list
 elseL :: [a] -> [a] -> [a]

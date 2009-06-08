@@ -55,8 +55,8 @@ minMaxFaces = foldl f ((Vec3f inf inf inf),(Vec3f (-inf) (-inf) (-inf))) where
 
 -- Determine if there is an intersection with the bounding box
 intersectB :: Ray -> Bounding -> Bool
-intersectB (Ray o d) Unbounded               = True
-intersectB (Ray o d) (BoundingBox minV maxV) =
+intersectB (Ray o d eta) Unbounded               = True
+intersectB (Ray o d eta) (BoundingBox minV maxV) =
     let (Vec3f roX roY roZ) = o in
     let (Vec3f rdX rdY rdZ) = d in
     let (Vec3f x1  y1  z1)  = minV in

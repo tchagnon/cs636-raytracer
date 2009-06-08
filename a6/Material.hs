@@ -16,7 +16,15 @@ data Material =
         ka      :: RealT,
         kt      :: RealT,
         n       :: RealT,
+        m       :: RealT,
         cs      :: Color,
-        cd      :: Color
+        cd      :: Vec3f -> Color,
+        ct      :: Color,
+        eta     :: RealT
     }
-    deriving (Show, Eq)
+instance Show Material where
+    show mat = "PhongMaterial" ++ (concatMap show (map ($mat) [kd, ks, ka, kt, n, m, eta]))
+instance Eq Material where
+    x == y =
+        let vars = [kd, ks, ka, kt, n, m, eta] in
+        and (zipWith (==) (map ($x) vars) (map ($y) vars))

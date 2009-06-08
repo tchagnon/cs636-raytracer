@@ -115,8 +115,8 @@ avgVecs vs = norm ((1/(fromIntegral $ length vs)) `svMul` (foldl1 (+) vs))
 
 -- Intersect a ray with a mesh model
 intersectM :: Ray -> Material -> Mesh -> [Intersection]
-intersectM (Ray r d) mat (TriMesh [] _) = []
-intersectM (Ray r d) mat (TriMesh ((face,norms):rest) shading) =
+intersectM (Ray r d eta) mat (TriMesh [] _) = []
+intersectM (Ray r d eta) mat (TriMesh ((face,norms):rest) shading) =
     let (Face a amb amc)   = face in
     let (Face na nb nc)    = norms in
     let amr                = a-r in
@@ -127,7 +127,7 @@ intersectM (Ray r d) mat (TriMesh ((face,norms):rest) shading) =
     let alpha              = 1 - beta - gamma in
     let t                  = (detMat3f (colMat3f amb amc amr)) / detA in
     let normal             = interpNorm shading face norms alpha beta gamma in
-    let recurse            = intersectM (Ray r d) mat (TriMesh rest shading) in
+    let recurse            = intersectM (Ray r d eta) mat (TriMesh rest shading) in
     if beta >= 0 && gamma >= 0 && (beta + gamma) <= 1 && t >= 0
         then (Inx t normal mat):recurse
         else recurse

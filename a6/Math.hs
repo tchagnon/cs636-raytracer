@@ -41,6 +41,7 @@ instance Num Vec3f where
     signum v                    = norm v
     fromInteger i               = Vec3f (fromInteger i) (fromInteger i) (fromInteger i)
 
+vec3f :: RealT -> RealT -> RealT -> Vec3f
 vec3f = Vec3f
 zeroVec3f :: Vec3f
 zeroVec3f = Vec3f 0 0 0

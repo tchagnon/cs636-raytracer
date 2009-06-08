@@ -20,7 +20,7 @@ sphere r = Sphere r zeroVec3f
 
 -- Intersect a ray with primitives
 intersectP :: Ray -> Material -> Primitive -> [Intersection]
-intersectP (Ray o d) mat (Sphere r ctr) =
+intersectP (Ray o d eta) mat (Sphere r ctr) =
     let b           = 2 * (d `dot` (o-ctr)) in
     let c           = (magSq (o-ctr)) - r*r in
     let discrim     = b*b - 4*c in
@@ -35,7 +35,7 @@ intersectP (Ray o d) mat (Sphere r ctr) =
                     then []
                     else [(Inx t1 (normal t1) mat)]
                 else [(Inx t0 (normal t0) mat), (Inx t1 (normal t1) mat)]
-intersectP (Ray r d) mat (Plane a b c) =
+intersectP (Ray r d eta) mat (Plane a b c) =
     let amb                = a-b in
     let amc                = a-c in
     let amr                = a-r in

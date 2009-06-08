@@ -6,7 +6,7 @@ THREADING = -threaded
 #PROFILING = -prof -auto-all
 OPTIMIZE = -O2 -funbox-strict-fields -fexcess-precision -funfolding-keeness-factor=10 $(VIAC)
 VIAC = -fvia-C -optc-O3 -optc-msse3 -optc-ffast-math
-THREADS = 2
+THREADS = 4
 
 .PHONY: all test clean
 
@@ -17,7 +17,7 @@ all: $(SCENES)
 
 %.ppm: %
 	time -p ./$< $(THREADS) +RTS -N$(THREADS)
-	display $@
+	-display $@
 
 test: $(IMAGES)
 

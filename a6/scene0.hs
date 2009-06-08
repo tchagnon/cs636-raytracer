@@ -17,7 +17,7 @@ scene0 =
         superSample     = 2,
         outputSampleMap = False,
         sampleThreshold = vec3f 0.05 0.05 0.05,
-        reflectionDepth = 4,
+        reflectionDepth = 8,
         background      = black,
         ambientLight    = white,
         defaultMaterial = mat0,
@@ -32,26 +32,24 @@ scene0 =
         lights = [light0],
         objects =
             Group [
-                Primitive (Plane (vec3f 0 0 0) (vec3f 0 0 1) (vec3f 1 0 0)),
-                Material matMirror (
-                    Transform (translate (vec3f 0 2.3 (-1))) trefoil
+                Material mat0 (
+                    Primitive (Plane (vec3f 0 0 0) (vec3f 0 0 1) (vec3f 1 0 0))
                 ),
-                Material matBlue (
-                    Transform (translate (vec3f 1.5 0.75 0.5)) (
-                    Transform (scale (vec3f 1.5 1.5 1.5)) (
-                        LoadMesh "../models/bound-bunny_1k.smf" SmoothShade
-                    ))
+                Material matTransparent (
+                    Transform (translate (vec3f (-1.0) 1.5 (-0.5))) (
+                        Primitive (sphere 1.5)
+                    )
                 ),
                 Material matTeapot (
-                    Transform (translate (vec3f (-1.5) 0 (-2.5))) (
-                    Transform (scale (vec3f 0.45 0.45 0.45)) (
-                    Transform (rotate (-115) (vec3f 0 1 0)) (
+                    Transform (translate (vec3f (1.5) 0 (-2.0))) (
+                    Transform (scale (vec3f 0.75 0.75 0.75)) (
+                    Transform (rotate (-45) (vec3f 0 1 0)) (
                         LoadMesh "../models/teapot.smf" SmoothShade
                     )))
                 ),
                 Material matCow (
-                    Transform (translate (vec3f (1.5) 3.6 (-1.0))) (
-                    Transform (scale (vec3f 2 2 2)) (
+                    Transform (translate (vec3f (0.0) 0.0 (-10.0))) (
+                    Transform (scale (vec3f 15 15 15)) (
                     Transform (rotate (-45) (vec3f 0 1 0)) (
                         LoadMesh "../models/bound-cow.smf" SmoothShade
                     )))
@@ -68,27 +66,45 @@ trefoil = Group [ Transform (translate (trefoilPos t)) ball
 
 mat0 =
     PhongMaterial {
-        kd = 0.5,
-        ks = 0.1,
+        kd = 0.6,
+        ks = 0.3,
         ka = 0.1,
         kt = 0.0,
         n  = 30,
+        m  = 30,
         cs = white,
-        cd = white
+        cd = \(Vec3f x y z) -> if ((floor x)+(floor z)) `rem` 2 == 0 then cornflowerBlue else white,
+        ct = white,
+        eta = etaGlass
     }
 
-matBlue = mat0 {cd = cornflowerBlue}
-matTeapot = mat0 {cd = orange}
-
-matMirror =
+matTransparent =
     PhongMaterial {
-        kd = 0.1,
-        ks = 0.9,
+        kd = 0.01,
+        ks = 0.1,
         ka = 0.0,
-        kt = 0.0,
-        n  = 100,
+        kt = 0.9,
+        n  = 30,
+        m  = 10,
         cs = white,
-        cd = white
+        cd = const white,
+        ct = white,
+        eta = etaGlass
+    }
+
+
+matTeapot =
+    PhongMaterial {
+        kd = 0.2,
+        ks = 0.1,
+        ka = 0.0,
+        kt = 0.7,
+        n  = 30,
+        m  = 10,
+        cs = white,
+        cd = const orange,
+        ct = white,
+        eta = etaGlass
     }
 
 matCow     =
@@ -98,8 +114,11 @@ matCow     =
         ka = 0.4,
         kt = 0.0,
         n  = 5,
-        cs  = darkBrown,
-        cd  = darkBrown
+        m  = 5,
+        cs = darkBrown,
+        cd = const darkBrown,
+        ct = white,
+        eta = etaGlass
     }
 
 light0 =

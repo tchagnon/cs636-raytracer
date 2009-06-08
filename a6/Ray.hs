@@ -9,7 +9,7 @@ module Ray where
 import Math
 import Material
 
-data Ray = Ray Vec3f Vec3f
+data Ray = Ray Vec3f Vec3f RealT
     deriving Show
 
 --                      t     Normal Material
@@ -20,3 +20,10 @@ instance Ord Intersection where
 
 intxLessThan :: Intersection -> RealT -> Bool
 intxLessThan (Inx t0 _ _) t1 = t0 < t1
+
+etaAir :: RealT
+etaAir = 1.00029
+etaWater :: RealT
+etaWater = 1.33
+etaGlass :: RealT
+etaGlass = 1.52
