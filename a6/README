@@ -1,9 +1,9 @@
 NAME
-    Assignment 5 - Add shadows and reflections.
+    Assignment 6 - Add refractions
 
     Timothy A. Chagnon (tc365)
     CS 636 - Advanced Rendering Techniques
-    2 June 2009
+    8 June 2009
 
 DESCRIPTION
     This program takes a scene description with spheres and meshes and renders
@@ -18,13 +18,12 @@ DEVELOPMENT ENVIRONMENT
 FILES
 
   Scenes:
-    scene0.hs               Trefoil of spheres, bunny, cow, teapot.
+    scene0.hs               Sphere, teapot, cow.
 
   New Code:
-    RayTracer.hs            Additional code for shadows, reflections
-                            Lines: 145-186
+    RayTracer.hs            Additional code for refractions:
+                            Lines: 145-196
                             In existing functions: getColor, diffSpec
-    Primitive.hs            Added Plane
 
   Core Code:
     RayTracer.hs            Top level ray tracing logic
