@@ -4,9 +4,9 @@ DEPENDS = Bounding Color Image Material Math Mesh Object Primitive Ray RayTracer
 GHCARGS = $(THREADING) $(PROFILING) $(OPTIMIZE)
 THREADING = -threaded
 #PROFILING = -prof -auto-all
-OPTIMIZE = -O2 -funbox-strict-fields -fexcess-precision -funfolding-keeness-factor=10 $(VIAC)
+OPTIMIZE = -O2 -funbox-strict-fields -fexcess-precision -funfolding-keeness-factor=10 #$(VIAC)
 VIAC = -fvia-C -optc-O3 -optc-msse3 -optc-ffast-math
-THREADS = 2
+THREADS = 4
 
 .PHONY: all test clean
 

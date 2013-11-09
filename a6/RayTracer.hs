@@ -27,7 +27,7 @@ import Mesh
 import Object
 
 import System.Environment
-import Control.Parallel.Strategies
+import Control.Parallel.Strategies hiding (dot)
 import Data.Array
 import Debug.Trace
 
@@ -49,7 +49,7 @@ rayTracer scene = do
 evalParallel :: Int -> [(Color,Int)] -> [(Color,Int)]
 evalParallel threads pixels =
     let chunkSize = (length pixels) `div` threads in
-    pixels `using` (parListChunk chunkSize rnf)
+    pixels `using` (parListChunk chunkSize rdeepseq)
 
 chunk :: Int -> [a] -> [[a]]
 chunk n [] = []

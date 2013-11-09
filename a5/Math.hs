@@ -7,7 +7,8 @@
  -}
 module Math where
 
-import Control.Parallel.Strategies
+import Control.Parallel.Strategies hiding (dot)
+import Control.DeepSeq
 import Debug.Trace
 tshow :: Show a => String -> a -> a
 tshow x y = trace (x ++ " " ++ (show y)) y
