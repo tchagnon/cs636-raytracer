@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {- Math.hs
  - Point of switching between MathDirect and MathHmatrix
  -

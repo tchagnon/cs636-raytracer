@@ -31,11 +31,11 @@ scene0 =
                 Transform (translate (vec3f   1  0 0)) (
                     Primitive (Sphere 0.4)),
                 Transform (rotate (-90) (vec3f  0 1 0)) (
-                    --LoadMesh "../models/octahedron.smf"
-                    --LoadMesh "../models/icos.smf"
-                    --LoadMesh "../models/sprellpsd.smf"
-                    --LoadMesh "../models/bound-bunny_200.smf"
-                    LoadMesh "../models/bound-bunny_1k.smf"
+                    --LoadMesh "models/octahedron.smf"
+                    --LoadMesh "models/icos.smf"
+                    --LoadMesh "models/sprellpsd.smf"
+                    --LoadMesh "models/bound-bunny_200.smf"
+                    LoadMesh "models/bound-bunny_1k.smf"
                     )
             ]
     }

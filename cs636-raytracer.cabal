@@ -1,0 +1,108 @@
+name:                cs636-raytracer
+version:             0.1.0.0
+synopsis:            Raytracer for Drexel CS636 class written in Haskell
+description:         Please see README.md
+homepage:            http://github.com/tchagnon/cs636-raytracer#readme
+license:             OtherLicense
+license-file:        LICENSE
+author:              Tim Chagnon
+maintainer:          tim.chagnon-at-gmail.com
+copyright:           2009-2015 Tim Chagnon
+category:            Graphics
+build-type:          Simple
+-- extra-source-files:
+cabal-version:       >=1.10
+
+executable a1-scene0
+  hs-source-dirs:      a1
+  main-is:             scene0.hs
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+                       -O2 -funbox-strict-fields -fexcess-precision -funfolding-keeness-factor=10
+  build-depends:       base, array, parallel
+  default-language:    Haskell2010
+  other-modules:       Color Image MatInv Math MathDirect Mesh Primitive Ray RayTracer Scene
+
+executable a1-teapot
+  hs-source-dirs:      a1
+  main-is:             teapot.hs
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+                       -O2 -funbox-strict-fields -fexcess-precision -funfolding-keeness-factor=10
+  build-depends:       base, array, parallel
+  default-language:    Haskell2010
+  other-modules:       Color Image MatInv Math MathDirect Mesh Primitive Ray RayTracer Scene
+
+executable a2-scene0
+  hs-source-dirs:      a2
+  main-is:             scene0.hs
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+                       -O2 -funbox-strict-fields -fexcess-precision -funfolding-keeness-factor=10
+  build-depends:       base, array, parallel, deepseq
+  default-language:    Haskell2010
+  other-modules:       Color Image Material Math Mesh Primitive Ray RayTracer Scene
+
+executable a2-scene1
+  hs-source-dirs:      a2
+  main-is:             scene1.hs
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+                       -O2 -funbox-strict-fields -fexcess-precision -funfolding-keeness-factor=10
+  build-depends:       base, array, parallel, deepseq
+  default-language:    Haskell2010
+  other-modules:       Color Image Material Math Mesh Primitive Ray RayTracer Scene
+
+executable a3-scene0
+  hs-source-dirs:      a3
+  main-is:             scene0.hs
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+                       -O2 -funbox-strict-fields -fexcess-precision -funfolding-keeness-factor=10
+  build-depends:       base, array, parallel, deepseq
+  default-language:    Haskell2010
+  other-modules:       Bounding Color Image Material Math Mesh Object Primitive Ray RayTracer Scene
+
+executable a3-scene1
+  hs-source-dirs:      a3
+  main-is:             scene1.hs
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+                       -O2 -funbox-strict-fields -fexcess-precision -funfolding-keeness-factor=10
+  build-depends:       base, array, parallel, deepseq
+  default-language:    Haskell2010
+  other-modules:       Bounding Color Image Material Math Mesh Object Primitive Ray RayTracer Scene
+
+executable a4-scene0
+  hs-source-dirs:      a4
+  main-is:             scene0.hs
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+                       -O2 -funbox-strict-fields -fexcess-precision -funfolding-keeness-factor=10
+  build-depends:       base, array, parallel, deepseq
+  default-language:    Haskell2010
+  other-modules:       Bounding Color Image Material Math Mesh Object Primitive Ray RayTracer Scene
+
+executable a4-scene1
+  hs-source-dirs:      a4
+  main-is:             scene1.hs
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+                       -O2 -funbox-strict-fields -fexcess-precision -funfolding-keeness-factor=10
+  build-depends:       base, array, parallel, deepseq
+  default-language:    Haskell2010
+  other-modules:       Bounding Color Image Material Math Mesh Object Primitive Ray RayTracer Scene
+
+executable a5-scene0
+  hs-source-dirs:      a5
+  main-is:             scene0.hs
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+                       -O2 -funbox-strict-fields -fexcess-precision -funfolding-keeness-factor=10
+  build-depends:       base, array, parallel, deepseq
+  default-language:    Haskell2010
+  other-modules:       Bounding Color Image Material Math Mesh Object Primitive Ray RayTracer Scene
+
+executable a6-scene0
+  hs-source-dirs:      a6
+  main-is:             scene0.hs
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+                       -O2 -funbox-strict-fields -fexcess-precision -funfolding-keeness-factor=10
+  build-depends:       base, array, parallel, deepseq
+  default-language:    Haskell2010
+  other-modules:       Bounding Color Image Material Math Mesh Object Primitive Ray RayTracer Scene
+
+source-repository head
+  type:     git
+  location: https://github.com/githubuser/try-stack

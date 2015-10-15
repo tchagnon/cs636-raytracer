@@ -39,21 +39,21 @@ scene0 =
                 Material matBlue (
                     Transform (translate (vec3f 1.5 0.75 0.5)) (
                     Transform (scale (vec3f 1.5 1.5 1.5)) (
-                        LoadMesh "../models/bound-bunny_1k.smf" SmoothShade
+                        LoadMesh "models/bound-bunny_1k.smf" SmoothShade
                     ))
                 ),
                 Material matTeapot (
                     Transform (translate (vec3f (-1.5) 0 (-2.5))) (
                     Transform (scale (vec3f 0.45 0.45 0.45)) (
                     Transform (rotate (-115) (vec3f 0 1 0)) (
-                        LoadMesh "../models/teapot.smf" SmoothShade
+                        LoadMesh "models/teapot.smf" SmoothShade
                     )))
                 ),
                 Material matCow (
                     Transform (translate (vec3f (1.5) 3.6 (-1.0))) (
                     Transform (scale (vec3f 2 2 2)) (
                     Transform (rotate (-45) (vec3f 0 1 0)) (
-                        LoadMesh "../models/bound-cow.smf" SmoothShade
+                        LoadMesh "models/bound-cow.smf" SmoothShade
                     )))
                 )
             ]

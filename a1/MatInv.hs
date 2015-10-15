@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {- MatInv.hs
  - 4x4 Matrix invert function.
  - Direct implementation obtained from Maple's CodeGeneration

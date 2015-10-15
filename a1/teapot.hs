@@ -26,6 +26,6 @@ scene =
         background = black,
         objects =
             Group [
-                LoadMesh "../models/teapot.smf"
+                LoadMesh "models/teapot.smf"
             ]
     }

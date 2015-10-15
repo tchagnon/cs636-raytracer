@@ -11,6 +11,27 @@ background information.
 
 Each assignment directory (a1-a6) has its own simple Makefile build and README.
 
+## Building
+
+All executables can now be built with [stack][stack].  After cloning this repo,
+run:
+```
+stack setup
+stack build
+```
+
+[stack]:https://github.com/commercialhaskell/stack
+
+## Running
+
+To run each scene executable, time it and display the resulting image, execute
+the following.  The `4 +RTS -N4` specifies the number of threads to use.
+```
+time stack exec a4-scene0 4 +RTS -N4
+convert scene0.ppm scene0.png
+open scene0.png
+```
+
 ## Links
 
 - [Class website, lectures and assignments][class]

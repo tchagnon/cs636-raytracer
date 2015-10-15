@@ -37,11 +37,11 @@ scene0 =
                     Primitive (sphere 0.4)),
                 Material matBlue (
                     Transform (translate (vec3f 0 (-0.3) 2.5)) (
-                        --LoadMesh "../models/octahedron.smf" FlatShade
-                        --LoadMesh "../models/icos.smf" FlatShade
-                        --LoadMesh "../models/sprellpsd.smf" FlatShade
-                        --LoadMesh "../models/bound-bunny_200.smf" SmoothShade
-                        LoadMesh "../models/bound-bunny_1k.smf" SmoothShade
+                        --LoadMesh "models/octahedron.smf" FlatShade
+                        --LoadMesh "models/icos.smf" FlatShade
+                        --LoadMesh "models/sprellpsd.smf" FlatShade
+                        --LoadMesh "models/bound-bunny_200.smf" SmoothShade
+                        LoadMesh "models/bound-bunny_1k.smf" SmoothShade
                     )
                 )
             ]

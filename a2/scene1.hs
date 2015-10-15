@@ -43,21 +43,21 @@ scene =
                 Material matBunny (
                     Transform (translate (vec3f 1.5 0.5 1.5)) (
                     Transform (rotate (-45) (vec3f 0 1 0)) (
-                        LoadMesh "../models/bound-bunny_1k.smf" FlatShade
+                        LoadMesh "models/bound-bunny_1k.smf" FlatShade
                     ))
                 ),
                 Material matFire (
                     Transform (translate (vec3f 0.3 0 0)) (
                     Transform (scale (vec3f 0.007 0.007 0.007)) (
                     Transform (rotate (-90) (vec3f 1 0 0)) (
-                        LoadMesh "../models/campfire.smf" SmoothShade
+                        LoadMesh "models/campfire.smf" SmoothShade
                     )))
                 ),
                 Material matFrog (
                     Transform (translate (vec3f (1.7) 0.5 (-1.7))) (
                     Transform (scale (vec3f 0.5 0.5 0.5)) (
                     Transform (rotate 45 (vec3f 0 1 0)) (
-                        LoadMesh "../models/frog.smf" SmoothShade
+                        LoadMesh "models/frog.smf" SmoothShade
                     )))
                 ),
                 Material matOuthouse (
@@ -65,21 +65,21 @@ scene =
                     Transform (scale (vec3f 0.02 0.02 0.02)) (
                     Transform (rotate (-35) (vec3f 0 1 0)) (
                     Transform (rotate (-90) (vec3f 1 0 0)) (
-                        LoadMesh "../models/outhouse.smf" SmoothShade
+                        LoadMesh "models/outhouse.smf" SmoothShade
                     ))))
                 ),
                 Material matCow (
                     Transform (translate (vec3f (-1.5) 0.6 (-1.5))) (
                     Transform (scale (vec3f 2 2 2)) (
                     Transform (rotate (-45) (vec3f 0 1 0)) (
-                        LoadMesh "../models/bound-cow.smf" SmoothShade
+                        LoadMesh "models/bound-cow.smf" SmoothShade
                     )))
                 ),
                 Material mat0 (
                     Transform (translate (vec3f (-1.3) 0 (1.3))) (
                     Transform (scale (vec3f 0.15 0.15 0.15)) (
                     Transform (rotate (45) (vec3f 0 1 0)) (
-                        LoadMesh "../models/teapot.smf" SmoothShade
+                        LoadMesh "models/teapot.smf" SmoothShade
                     )))
                 )
 

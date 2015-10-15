@@ -44,14 +44,14 @@ scene0 =
                     Transform (translate (vec3f (1.5) 0 (-2.0))) (
                     Transform (scale (vec3f 0.75 0.75 0.75)) (
                     Transform (rotate (-45) (vec3f 0 1 0)) (
-                        LoadMesh "../models/teapot.smf" SmoothShade
+                        LoadMesh "models/teapot.smf" SmoothShade
                     )))
                 ),
                 Material matCow (
                     Transform (translate (vec3f (0.0) 0.0 (-10.0))) (
                     Transform (scale (vec3f 15 15 15)) (
                     Transform (rotate (-45) (vec3f 0 1 0)) (
-                        LoadMesh "../models/bound-cow.smf" SmoothShade
+                        LoadMesh "models/bound-cow.smf" SmoothShade
                     )))
                 )
             ]
